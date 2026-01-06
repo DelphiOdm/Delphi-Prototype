@@ -1,6 +1,8 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate, useLocation } from "react-router-dom";
+// import { API_BASE_URL } from '../config';
+const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
 function Login() {
     const [email, setEmail] = useState("");
@@ -37,7 +39,7 @@ function Login() {
         }
 
         try {
-            const res = await axios.post("http://172.16.60.17:8000/login", {
+            const res = await axios.post(`${API_BASE_URL}/login`, {
                 user_email: email,
                 user_password: password,
             }, {
@@ -50,7 +52,7 @@ function Login() {
             const Prole_id = parseInt(user.role);
             const getRole = async (Prole_id) => {
                 try {
-                    const roleRes = await axios.get(`http://172.16.60.17:8000/get_role`, {
+                    const roleRes = await axios.get(`${API_BASE_URL}/get_role`, {
                         params: { prole_id: Prole_id }
                     });
                     return roleRes.data.role_name;
@@ -160,3 +162,4 @@ function Login() {
 }
 
 export default Login;
+

@@ -33,3 +33,12 @@ code {
   color: #fff !important; /* change text color if needed */
   border-color: #254982 !important; /* optional, for outline consistency */
 }
+
+.form-check-input:checked{
+  background-color: #da2d2d !important;
+  border-color: #da2d2d !important;
+}
+
+.form-check-input:focus{
+  box-shadow: none !important;
+}

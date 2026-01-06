@@ -4,6 +4,8 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import * as XLSX from "xlsx";
 import { saveAs } from "file-saver";
+// import { API_BASE_URL } from '../config';
+const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
 export default function CampaignDetails() {
     // const { state } = useLocation();
@@ -19,7 +21,7 @@ export default function CampaignDetails() {
 
     const fetchCompanyList = async (campaignId) => {
         try {
-            const response = await axios.get("http://172.16.60.17:8000/get_company_by_campaign_id", {
+            const response = await axios.get(`${API_BASE_URL}/get_company_by_campaign_id`, {
                 params: {
                     Campaign_id: campaignId,
                 },
@@ -32,11 +34,11 @@ export default function CampaignDetails() {
                 ? response.data.card_data
                 : [];
 
-            // console.log("Fetched companies:", companies); // Debugging line
+            // console.log("Fetched companies:", card_data); // Debugging line
 
             const qualifiedCompanies = companies.filter(company => company.SMTP_Qualified_Count > 0).sort((a, b) => b.SMTP_Qualified_Count - a.SMTP_Qualified_Count);
 
-            console.log("Qualified companies:", qualifiedCompanies);
+            // console.log("Qualified companies:", qualifiedCompanies);
 
             companies.forEach((item) => {
                 setCampaignsMap({
@@ -72,12 +74,12 @@ export default function CampaignDetails() {
 
     const decryptValue = (encrypted) => {
         try {
-            return "₹" + parseFloat(atob(encrypted)).toLocaleString("en-IN", {
+            return "$" + parseFloat(atob(encrypted)).toLocaleString("en-IN", {
                 minimumFractionDigits: 2,
                 maximumFractionDigits: 2
             });
         } catch (e) {
-            return "₹0.00";
+            return "$0.00";
         }
     };
 
@@ -88,7 +90,7 @@ export default function CampaignDetails() {
             try {
                 const updatedStats = await Promise.all(stats.map(async item => {
                     if (item.label === "Projected Revenue" && item.encryptedValue) {
-                        const res = await axios.post("http://172.16.60.17:8000/decrypt_revenue", {
+                        const res = await axios.post(`${API_BASE_URL}/decrypt_revenue`, {
                             encrypted_value: item.encryptedValue,
                         });
 
@@ -114,13 +116,14 @@ export default function CampaignDetails() {
                         // Decrypt price if it exists
                         if (account.Price) {
                             try {
-                                const res = await axios.post("http://172.16.60.17:8000/decrypt_revenue", {
-                                    encrypted_value: account.Price,
+
+                                const res = await axios.post(`${API_BASE_URL}/decrypt_revenue`, {
+                                    encrypted_value: String(account.Price),
                                 });
 
                                 decryptedVal = res.data?.value;
-                                console.log("Decrypted response:", res.data);
-                                console.log(`Decrypted Price for ${account.Company_name}:`, decryptedVal);
+                                // console.log("Decrypted response:", res.data);
+                                // console.log(`Decrypted Price for ${account.Company_name}:`, decryptedVal);
 
                                 // decryptedPrice = decryptedVal ? parseFloat(decryptedVal) : null;
                             } catch (err) {
@@ -136,6 +139,7 @@ export default function CampaignDetails() {
                         };
                     })
                 );
+                // console.log("Decrypted qualified companies:", updatedCompanies);
 
                 setQualifiedCompanies(updatedCompanies);
             } catch (error) {
@@ -166,6 +170,8 @@ export default function CampaignDetails() {
                 }))
             );
 
+            // console.log("Masked qualified companies:", qualifiedCompanies);
+
             setShowRevenue(false);
         }
     };
@@ -173,7 +179,7 @@ export default function CampaignDetails() {
 
     // const fetchCampaignName = async (campaignId) => {
     //     try {
-    //         const response = await axios.get("http://172.16.60.17:8000/get_campaign_by_id", {
+    //         const response = await axios.get("http://172.16.60.19:8000/get_campaign_by_id", {
     //             params: {
     //                 Campaign_id: campaignId,
     //             },
@@ -241,7 +247,7 @@ export default function CampaignDetails() {
     };
 
     return (
-        <div className="container-fluid bg-light g-0 vh-100 pt-4">
+        <div className="container-fluid bg-light g-0 vh-500 pt-4">
             <div className="mb-3 p-0 container">
                 <button className="btn btn-light border d-flex align-items-center gap-2" onClick={() => navigate("/SuperManagerDashboard")}>
                     <i className="bi bi-arrow-left"></i> Back to Campaigns

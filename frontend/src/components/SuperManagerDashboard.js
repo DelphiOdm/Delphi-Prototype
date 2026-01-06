@@ -2,6 +2,9 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import CampaignLineChart from "./CampaignLineChart";
+// import { API_BASE_URL } from '../config';
+const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
 const months = [
     "January", "February", "March", "April", "May", "June",
@@ -18,11 +21,13 @@ export default function SuperAdminDashboard() {
     const [selectedYear, setSelectedYear] = useState("");
     const [allCampaigns, setCampaigns] = useState([]);
     const [filterType, setFilterType] = useState("dateRange"); // default to dateRange
+    const [loading, setLoading] = useState(true);
     const navigate = useNavigate();
 
     const fetchCampaignList = async (startDate = null, endDate = null) => {
         try {
-            const response = await axios.get("http://172.16.60.17:8000/get_all_campaigns", {
+            setLoading(true); // ⏳ Start loading
+            const response = await axios.get(`${API_BASE_URL}/get_all_campaigns`, {
                 params: {
                     start_date: startDate,
                     end_date: endDate,
@@ -32,12 +37,12 @@ export default function SuperAdminDashboard() {
                 ? response.data.campaigns
                 : [];
 
-
-
             setCampaigns(campaigns); // Adjust the state name if needed
             console.log("Fetched Campaigns:", campaigns);
         } catch (error) {
             console.error("Error fetching campaigns:", error);
+        } finally {
+            setLoading(false); // ✅ Stop loading after fetch completes
         }
     };
 
@@ -279,6 +284,10 @@ export default function SuperAdminDashboard() {
             {/* Campaigns */}
             <div className="card container">
                 <div className="card-body">
+                    <div className="mb-4">
+                        <CampaignLineChart data={allCampaigns} />
+                    </div>
+
                     <div className="d-flex justify-content-between align-items-center mb-2">
                         <h4 className="mb-2">Campaigns ({allCampaigns.length})</h4>
                     </div>

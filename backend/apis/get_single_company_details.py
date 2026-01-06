@@ -137,7 +137,7 @@ def decrypt_price_revenue(
         decrypted = decrypt_value(encrypted_value)
         return {"value": f"${float(decrypted):,.2f}"}
     except Exception as e:
-        return {"error": f"Decryption failed: {str(e)}"}
+        return {"error": f"Decryption failedsssdf: {str(e)}"}
 
 
 @router.post("/decrypt_price_cpl")
@@ -148,4 +148,4 @@ def decrypt_price_cpl(
         decrypted = decrypt_value(encrypted_value)
         return {"value": f"${float(decrypted):,.2f}"}
     except Exception as e:
-        return {"error": f"Decryption failed: {str(e)}"}
+        return {"error": f"Decryption failedwerwerwer: {str(e)}"}

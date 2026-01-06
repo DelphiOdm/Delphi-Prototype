@@ -9,17 +9,21 @@ router = APIRouter()
 
 @router.get("/get_company_by_campaign_id")
 def get_company_by_campaign_id(
-    Campaign_id: int = Query(..., description="The ID of the campaign" ),
-    ):
+    Campaign_id: int = Query(..., description="The ID of the campaign"),
+):
     try:
         conn = get_conn()
         cursor = conn.cursor(dictionary=True)
         cursor.execute(
             """
-            SELECT tod.Price, tod.Order_key_id, tod.Order_id, tod.Order_name as Campaign_name, cli.Client_name as Client_name, tel.Order_key_id, tlm.Lead_id, tlm.Company_name,stdi.Standard_industry_desc as Industry,mleCountry.Location_desc AS Country,tlm.Mail_domain,tlm.Country_id,tlm.Standard_industry_id,
-            COUNT(*) AS Total_Leads_Scored,COUNT(CASE WHEN tlsat.IsSMTPqualified = 1 THEN 1 END) AS SMTP_Qualified_Count,
-            COUNT(CASE WHEN tlsat.IsSMTPqualified = 0 THEN 1 END) AS SMTP_Disqualified_Count,
-            COUNT(CASE WHEN tlsat.IsSMTPqualified = 9 THEN 1 END) AS SMTP_Pending_Count
+            SELECT tod.Price, tod.Order_key_id, tod.Order_id, tod.Order_name as Campaign_name, 
+                   cli.Client_name as Client_name, tel.Order_key_id, tlm.Lead_id, tlm.Company_name,
+                   stdi.Standard_industry_desc as Industry, mleCountry.Location_desc AS Country,
+                   tlm.Mail_domain, tlm.Country_id, tlm.Standard_industry_id,
+                   COUNT(*) AS Total_Leads_Scored,
+                   COUNT(CASE WHEN tlsat.IsSMTPqualified = 1 THEN 1 END) AS SMTP_Qualified_Count,
+                   COUNT(CASE WHEN tlsat.IsSMTPqualified = 0 THEN 1 END) AS SMTP_Disqualified_Count,
+                   COUNT(CASE WHEN tlsat.IsSMTPqualified = 9 THEN 1 END) AS SMTP_Pending_Count
             FROM tblengaged_leads tel
             JOIN tblleads_status_activity_tracker tlsat ON tlsat.Engage_id = tel.Engage_id
             JOIN tblleads_masterlist_cleaned tlm ON tlm.Lead_id = tel.Lead_id
@@ -28,8 +32,8 @@ def get_company_by_campaign_id(
             JOIN tblorder_details tod ON tod.Order_key_id = tel.Order_key_id
             JOIN mst_tblclient_campaigns cam ON cam.Campaign_key_id = tod.Campaign_key_id
             JOIN mst_tblclients cli ON cli.Client_id= cam.Client_id
-            where tel.Order_key_id = %s AND tlsat.Outcome_id = 18  AND tlsat.QAstatus_id = 0 
-            group by tlm.Company_name,tlm.Country_id,tlm.Standard_industry_id,tlm.Mail_domain
+            WHERE tel.Order_key_id = %s AND tlsat.Outcome_id = 18 AND tlsat.QAstatus_id = 0 
+            GROUP BY tlm.Company_name, tlm.Country_id, tlm.Standard_industry_id, tlm.Mail_domain
             """,
             (Campaign_id,)
         )
@@ -39,7 +43,6 @@ def get_company_by_campaign_id(
         conn.close()
     
         if not rows:
-        #instead of raising 500, return a 404 with message
             return {"companies": [], "message": "No companies found"}
         
         totalQualified = 0
@@ -49,21 +52,22 @@ def get_company_by_campaign_id(
         cpl_value = None
 
         for row in rows:
-            # Price handling
-            if "Company_name" in row and row["Company_name"]:
-                row["Company_name_dec"] = decrypt_value(row["Company_name"])
-            
             if "Price" in row and row["Price"]:
                 decrypted_price = decrypt_value(row["Price"])
                 try:
+                    # Remove $ and commas for numeric calculations
                     price_float = float(decrypted_price.replace("$", "").replace(",", ""))
-                    row["Price"] = f"${price_float:,.2f}"
-                    totalRevenue += price_float * (row.get("SMTP_Qualified_Count") or 0)
+                    row["Price"] = price_float  # store as numeric
+                    revenue = price_float * (row.get("SMTP_Qualified_Count") or 0)
+                    row["Revenue"] = revenue  # numeric, no $
+
+                    totalRevenue += revenue
 
                     if cpl_value is None:
                         cpl_value = price_float
                 except ValueError:
-                    row["Price"] = decrypted_price  # Keep original if parsing fails
+                    row["Price"] = decrypted_price  # fallback
+                    row["Revenue"] = 0
 
             # Tally totals
             totalQualified += row.get("SMTP_Qualified_Count") or 0
@@ -75,27 +79,26 @@ def get_company_by_campaign_id(
             {"value": totalDisqualified, "label": "Disqualified", "color": "text-danger"},
             {"value": totalPending, "label": "Pending", "color": "text-orange"},
             {
-                "value": f"${cpl_value:,.2f}" if cpl_value is not None else "$0.00",
+                "value": f"${cpl_value:,.2f}" if cpl_value is not None else "$0.00",  # only CPL keeps $
                 "label": "CPL",
                 "color": "text-success"
             },
             {
-                "value": encrypt_value(f"{totalRevenue:.2f}"),  # raw number, no $
+                "value": encrypt_value(f"{totalRevenue:.2f}"),  # numeric total revenue, no $
                 "label": "Projected Revenue",
                 "color": "text-purple",
                 "is_encrypted": True
             }
         ]
 
-        return {"companies": rows ,"card_data": card_data}
+        return {"companies": rows, "card_data": card_data}
     
     except HTTPException as he:
-        #If you deliberately raised HTTPException somewhere
         raise he
     
     except Exception as e:
-        #Catch all other errors and respond gracefully
         return {"companies": [], "error": "Internal server error: " + str(e)}
+
 
 # @router.get("/get_company_by_campaign_id")
 # def get_company_by_campaign_id(
@@ -422,4 +425,4 @@ def decrypt_revenue(
         decrypted = decrypt_value(encrypted_value)
         return {"value": f"${float(decrypted):,.2f}"}
     except Exception as e:
-        return {"error": f"Decryption failed: {str(e)}"}
+        return {"error": f"Decryption faileddd: {str(e)}"} 

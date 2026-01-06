@@ -1,0 +1,19 @@
+# Python backend
+backend/__pycache__/
+backend/apis/__pycache__/
+backend/utils/__pycache__/
+backend/*.py[cod]
+backend/venv/
+backend/.env
+
+# Node.js frontend
+frontend/node_modules/
+frontend/.cache/
+frontend/.env
+
+# Editor / OS files
+*.swp
+*~
+.DS_Store
+.vscode/
+.idea/

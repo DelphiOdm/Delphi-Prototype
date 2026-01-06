@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import axios from "axios";
-
+// import { API_BASE_URL } from '../config';
+const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
 const fallbackCompany = {
     Lead_id: "123",
@@ -36,7 +37,7 @@ export default function CompanyDetails() {
 
     const fetchCompanyList = async () => {
         try {
-            const response = await axios.get("http://172.16.60.17:8000/get_single_company_details", {
+            const response = await axios.get(`${API_BASE_URL}/get_single_company_details`, {
                 params: {
                     Company_name,
                     Domain: Mail_domain,
@@ -46,7 +47,7 @@ export default function CompanyDetails() {
                 }
             });
 
-            console.log("Fetched company data:", response.data);
+            // console.log("Fetched company data:", response.data);
 
             const company = Array.isArray(response.data.company)
                 ? response.data.company
@@ -92,7 +93,7 @@ export default function CompanyDetails() {
                             ? "decrypt_price_revenue"
                             : "decrypt_price_cpl";
 
-                        const response = await axios.post(`http://172.16.60.17:8000/${endpoint}`, {
+                        const response = await axios.post(`${API_BASE_URL}/${endpoint}`, {
                             encrypted_value: item.encryptedValue,
                         });
 

@@ -30,8 +30,6 @@ def decrypt_value(encrypted: str) -> str:
     try:
         raw = base64.b64decode(encrypted)
  
-        # ✅ Correct order: nonce (16) + ciphertext (...) + tag (16)
-
         nonce, ciphertext, tag = raw[:16], raw[16:-16], raw[-16:]
         
         cipher = AES.new(SECRET_KEY, AES.MODE_EAX, nonce=nonce)
