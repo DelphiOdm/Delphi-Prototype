@@ -1,4 +1,3 @@
-// // src/components/LeadScoring.js
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import TopLeadsTable from "./TopLeadsTable";
@@ -7,22 +6,21 @@ export default function LeadScoring() {
   const [campaigns, setCampaigns] = useState([]);
   const [industries, setIndustries] = useState([]);
   const [countries, setCountries] = useState([]);
- // const [jobTitles, setJobTitles] = useState([]);
   const [jobLevels, setJobLevels] = useState([]);
   const [jobFunctions, setJobFunctions] = useState([]);
   const [employeeSizes, setEmployeeSizes] = useState([]);
   const [revenueSizes, setRevenueSizes] = useState([]);
+  const [qaStatuses, setQaStatuses] = useState([]);
 
-  // FINAL FILTER LIST
   const [filters, setFilters] = useState({
     campaign_id: "",
     country: "",
     industry: "",
-    //job_title: "",
     job_level: "",
     job_function: "",
     employee_size: "",
     revenue_size: "",
+    qa_status: "",
     start_date: "",
     end_date: "",
     limit: 100
@@ -32,80 +30,43 @@ export default function LeadScoring() {
   const [results, setResults] = useState([]);
   const [runInfo, setRunInfo] = useState(null);
   const [error, setError] = useState("");
-  const [pageSize, setPageSize] = useState(30); // ✅ Added missing state
+  const [pageSize, setPageSize] = useState(30);
 
-  /* ===================== NEW FLAGS ===================== */
   const isCampaignSelected = Boolean(filters.campaign_id);
-
   const isAnyOtherFilterSelected = Boolean(
-    filters.country ||
-    filters.industry ||
-    //filters.job_title ||
-    filters.job_level ||
-    filters.job_function ||
-    filters.employee_size ||
-    filters.revenue_size ||
-    filters.start_date ||
-    filters.end_date
+    filters.country || filters.industry || filters.job_level || 
+    filters.job_function || filters.employee_size || filters.revenue_size || 
+    filters.qa_status || filters.start_date || filters.end_date
   );
-  /* ===================================================== */
-  // API base — must be provided in .env as REACT_APP_API_DOMAIN (example: http://localhost:8000)
+
   const API_BASE = (process.env.REACT_APP_API_DOMAIN || "").replace(/\/$/, "");
 
-  if (!API_BASE) {
-    console.warn("REACT_APP_API_DOMAIN not set — LeadScoring requires backend API URL.");
-  }
-
-  // Backend endpoints (no mocks)
   const ENDPOINTS = {
     campaigns: `${API_BASE}/leadscores/filters/campaigns`,
     industries: `${API_BASE}/leadscores/filters/industries`,
     countries: `${API_BASE}/leadscores/filters/countries`,
-    //job_titles: `${API_BASE}/leadscores/filters/job_titles`,
     job_levels: `${API_BASE}/leadscores/filters/job_levels`,
     job_functions: `${API_BASE}/leadscores/filters/job_functions`,
     employee_sizes: `${API_BASE}/leadscores/filters/employee_sizes`,
     revenue_sizes: `${API_BASE}/leadscores/filters/revenue_sizes`,
+    qa_statuses: `${API_BASE}/leadscores/filters/qa-statuses`,
     campaignLeads: `${API_BASE}/leadscores/leads/campaign-leads`,
-    score: `${API_BASE}/leadscores/score`
   };
 
-  /* ====== Fetch reference data ====== */
   useEffect(() => {
-    if (results.length > 0) {
-    runScoring();
-  }
-    // run all fetches in parallel
+    if (results.length > 0) runScoring();
     fetchAllFilters();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line
   }, [pageSize]);
 
   const fetchAllFilters = async () => {
     try {
       await Promise.all([
-        fetchCampaigns(),
-        fetchIndustries(),
-        fetchCountries(),
-        //fetchJobTitles(),
-        fetchJobLevels(),
-        fetchJobFunctions(),
-        fetchEmployeeSizes(),
-        fetchRevenueSizes()
+        fetchCampaigns(), fetchIndustries(), fetchCountries(),
+        fetchJobLevels(), fetchJobFunctions(), fetchEmployeeSizes(),
+        fetchRevenueSizes(), fetchQaStatuses()
       ]);
-    } catch (e) {
-      // individual functions set their own errors/logs
-      console.error("fetchAllFilters error", e);
-    }
-  };
-
-  /* ====== Helper utilities ====== */
-  const safeGet = (obj, key, fallback = []) => {
-    try {
-      if (!obj) return fallback;
-      return obj[key] ?? fallback;
-    } catch {
-      return fallback;
-    }
+    } catch (e) { console.error("Filter Fetch Error", e); }
   };
 
   const toOptions = (arr, idKey = "id", labelKey = "label") => {
@@ -117,367 +78,234 @@ export default function LeadScoring() {
   };
 
   const fetchJson = async (url) => {
-    if (!API_BASE) throw new Error("API base URL not configured (REACT_APP_API_DOMAIN)");
     const res = await axios.get(url);
     return res.data;
   };
 
-  /* ====== Individual fetchers ====== */
   const fetchCampaigns = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.campaigns);
-      // expect backend shape: { campaigns: [ { Order_key_id, Campaign_name, ... } ] }
-      const raw = safeGet(data, "campaigns", []);
-      // normalize: use Order_key_id / Campaign_name if present
-      const opts = toOptions(
-        raw,
-        raw && raw.length && raw[0].Order_key_id !== undefined ? "Order_key_id" : "id",
-        raw && raw.length && raw[0].Campaign_name !== undefined ? "Campaign_name" : "label"
-      );
-      setCampaigns(opts);
-    } catch (err) {
-      console.error("fetchCampaigns failed:", err);
-      setCampaigns([]);
-    }
+    const data = await fetchJson(ENDPOINTS.campaigns);
+    const raw = data.campaigns || [];
+    setCampaigns(toOptions(raw, "Order_key_id", "Campaign_name"));
   };
 
   const fetchIndustries = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.industries);
-      const raw = safeGet(data, "industries", []);
-      setIndustries(toOptions(raw));
-    } catch (err) {
-      console.error("fetchIndustries failed:", err);
-      setIndustries([]);
-    }
+    const data = await fetchJson(ENDPOINTS.industries);
+    setIndustries(toOptions(data.industries || []));
   };
 
   const fetchCountries = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.countries);
-      const raw = safeGet(data, "countries", []);
-      setCountries(toOptions(raw));
-    } catch (err) {
-      console.error("fetchCountries failed:", err);
-      setCountries([]);
-    }
+    const data = await fetchJson(ENDPOINTS.countries);
+    setCountries(toOptions(data.countries || []));
   };
 
-  // const fetchJobTitles = async () => {
-  //   try {
-  //     const data = await fetchJson(ENDPOINTS.job_titles);
-  //     // accept either job_titles or jobTitles key
-  //     const raw = safeGet(data, "job_titles", safeGet(data, "jobTitles", []));
-  //     setJobTitles(toOptions(raw));
-  //   } catch (err) {
-  //     console.error("fetchJobTitles failed:", err);
-  //     setJobTitles([]);
-  //   }
-  // };
-
   const fetchJobLevels = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.job_levels);
-      const raw = safeGet(data, "job_levels", []);
-      setJobLevels(toOptions(raw));
-    } catch (err) {
-      console.error("fetchJobLevels failed:", err);
-      setJobLevels([]);
-    }
+    const data = await fetchJson(ENDPOINTS.job_levels);
+    setJobLevels(toOptions(data.job_levels || []));
   };
 
   const fetchJobFunctions = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.job_functions);
-      const raw = safeGet(data, "job_functions", []);
-      setJobFunctions(toOptions(raw));
-    } catch (err) {
-      console.error("fetchJobFunctions failed:", err);
-      setJobFunctions([]);
-    }
+    const data = await fetchJson(ENDPOINTS.job_functions);
+    setJobFunctions(toOptions(data.job_functions || []));
   };
 
   const fetchEmployeeSizes = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.employee_sizes);
-      const raw = safeGet(data, "employee_sizes", []);
-      setEmployeeSizes(toOptions(raw));
-    } catch (err) {
-      console.error("fetchEmployeeSizes failed:", err);
-      setEmployeeSizes([]);
-    }
+    const data = await fetchJson(ENDPOINTS.employee_sizes);
+    setEmployeeSizes(toOptions(data.employee_sizes || []));
   };
 
   const fetchRevenueSizes = async () => {
-    try {
-      const data = await fetchJson(ENDPOINTS.revenue_sizes);
-      const raw = safeGet(data, "revenue_sizes", []);
-      setRevenueSizes(toOptions(raw));
-    } catch (err) {
-      console.error("fetchRevenueSizes failed:", err);
-      setRevenueSizes([]);
-    }
+    const data = await fetchJson(ENDPOINTS.revenue_sizes);
+    setRevenueSizes(toOptions(data.revenue_sizes || []));
   };
 
-  /* ====== Filter update ====== */
+  const fetchQaStatuses = async () => { 
+    const data = await fetchJson(ENDPOINTS.qa_statuses);
+    setQaStatuses(toOptions(data.qa_statuses || []));
+  };
+
   const updateFilter = (key, value) => {
     setFilters((prev) => ({ ...prev, [key]: value }));
   };
 
   const clearFilters = () => {
     setFilters({
-      campaign_id: "",
-      country: "",
-      industry: "",
-      //job_title: "",
-      job_level: "",
-      job_function: "",
-      employee_size: "",
-      revenue_size: "",
-      start_date: "",
-      end_date: "",
-      limit: 100
+      campaign_id: "", country: "", industry: "", job_level: "",
+      job_function: "", employee_size: "", revenue_size: "",
+      qa_status: "", start_date: "", end_date: "", limit: 100
     });
     setResults([]);
     setRunInfo(null);
     setError("");
-    setPageSize(30); // Reset pagination
   };
 
- /* ===================== MAIN LOGIC ===================== */
   const runScoring = async () => {
-  setError("");
-  setLoading(true);
-  setResults([]);
-  setRunInfo(null);
+    setError("");
+    setLoading(true);
+    try {
+      const params = {
+        page: 1,
+        page_size: pageSize === "ALL" ? 10000 : pageSize
+      };
 
-  try {
-    const params = {
-      page: 1,
-      page_size: pageSize === "ALL" ? 10000 : pageSize
-    };
+      if (filters.campaign_id) {
+        params.order_id = filters.campaign_id;
+      } else {
+        params.country_id = filters.country || null;
+        params.industry_id = filters.industry || null;
+        params.job_level_id = filters.job_level || null;
+        params.job_function_id = filters.job_function || null;
+        params.employee_size_id = filters.employee_size || null;
+        params.revenue_size_id = filters.revenue_size || null;
+        params.qa_status = filters.qa_status || null;
+        params.start_date = filters.start_date || null;
+        params.end_date = filters.end_date || null;
+      }
 
-    /* ================= CAMPAIGN FLOW ================= */
-    if (filters.campaign_id) {
-      params.order_id = filters.campaign_id;
+      const res = await axios.get(ENDPOINTS.campaignLeads, { params });
+      setResults(res.data.leads || []);
+      setRunInfo({ total: res.data.total, total_pages: res.data.total_pages });
+    } catch (err) {
+      setError("Failed to fetch leads");
+    } finally {
+      setLoading(false);
     }
+  };
 
-    /* ================= FILTER FLOW ================= */
-    else {
-      params.country_id = filters.country || null;
-      params.industry_id = filters.industry || null;
-      //params.job_title = filters.job_title || null;
-      params.job_level_id = filters.job_level || null;
-      params.job_function_id = filters.job_function || null;
-      params.employee_size_id = filters.employee_size || null;
-      params.revenue_size_id = filters.revenue_size || null;
-      params.start_date = filters.start_date || null;
-      params.end_date = filters.end_date || null;
-    }
-
-    const res = await axios.get(ENDPOINTS.campaignLeads, { params });
-
-    setResults(res.data.leads || []);
-    setRunInfo({
-      total: res.data.total,
-      total_pages: res.data.total_pages
-    });
-
-  } catch (err) {
-    console.error(err);
-    setError("Failed to fetch leads");
-  } finally {
-    setLoading(false);
-  }
-};
-
-  /* ===================================================== */
   return (
-    <div className="container-fluid bg-light g-0 vh-100 pt-4">
-      <div className="card mb-3 container">
-        <div className="card-body">
-          <h4 className="card-title mb-3">Lead Scoring - Filters</h4>
-
-          <div className="row g-3">
-
-            {/* Campaign */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Campaign</label>
-              <select className="form-select"
-                value={filters.campaign_id}
-                onChange={(e) => updateFilter("campaign_id", e.target.value)} disabled={isAnyOtherFilterSelected}
-              >
-                <option value="">All Campaigns</option>
-                {campaigns.map(c => (
-                  <option key={c.id} value={c.id}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Country */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Country</label>
-              <select className="form-select"
-                value={filters.country}
-                onChange={(e) => updateFilter("country", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Countries</option>
-                {countries.map(c => (
-                  <option key={c.id} value={c.id}>{c.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Industry */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Industry</label>
-              <select className="form-select"
-                value={filters.industry}
-                onChange={(e) => updateFilter("industry", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Industries</option>
-                {industries.map(i => (
-                  <option key={i.id} value={i.id}>{i.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Job Title */}
-            {/* <div className="col-md-3">
-              <label className="form-label small text-secondary">Job Title</label>
-              <select className="form-select"
-                value={filters.job_title}
-                onChange={(e) => updateFilter("job_title", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Job Titles</option>
-                {jobTitles.map(j => (
-                  <option key={j.id} value={j.id}>{j.label}</option>
-                ))}
-              </select>
-            </div> */}
-
-            {/* Job Level */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Job Level</label>
-              <select className="form-select"
-                value={filters.job_level}
-                onChange={(e) => updateFilter("job_level", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Levels</option>
-                {jobLevels.map(j => (
-                  <option key={j.id} value={j.id}>{j.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Job Function */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Job Function</label>
-              <select className="form-select"
-                value={filters.job_function}
-                onChange={(e) => updateFilter("job_function", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Functions</option>
-                {jobFunctions.map(j => (
-                  <option key={j.id} value={j.id}>{j.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Employee Size */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Employee Size</label>
-              <select className="form-select"
-                value={filters.employee_size}
-                onChange={(e) => updateFilter("employee_size", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Sizes</option>
-                {employeeSizes.map(j => (
-                  <option key={j.id} value={j.id}>{j.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Revenue Size */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Revenue Size</label>
-              <select className="form-select"
-                value={filters.revenue_size}
-                onChange={(e) => updateFilter("revenue_size", e.target.value)} disabled={isCampaignSelected}
-              >
-                <option value="">All Sizes</option>
-                {revenueSizes.map(j => (
-                  <option key={j.id} value={j.id}>{j.label}</option>
-                ))}
-              </select>
-            </div>
-
-            {/* Start Date */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">Start Date</label>
-              <input type="date" className="form-control"
-                value={filters.start_date}
-                onChange={(e) => updateFilter("start_date", e.target.value)} disabled={isCampaignSelected}
-              />
-            </div>
-
-            {/* End Date */}
-            <div className="col-md-3">
-              <label className="form-label small text-secondary">End Date</label>
-              <input type="date" className="form-control"
-                value={filters.end_date}
-                onChange={(e) => updateFilter("end_date", e.target.value)} disabled={isCampaignSelected}
-              />
-            </div>
-
-            {/* Buttons */}
-            <div className="col-md-3 d-flex align-items-end">
-              <button className="btn btn-primary me-2" onClick={runScoring}
-                disabled={loading}
-              >
-                {loading ? "Running..." : "Score Leads"}
-              </button>
-
-              <button className="btn btn-secondary" onClick={clearFilters} disabled={loading}>
-                Reset
-              </button>
-            </div>
-                
-          </div>
-                
-          {error && <div className="alert alert-danger mt-3">{error}</div>}
-
-          {/* run info (optional) */}
-          {runInfo && runInfo.run_id && (
-            <div className="text-muted small mt-2">Run ID: {runInfo.run_id}</div>
-          )}
-
-          
+    <div className="container-fluid bg-light min-vh-100 py-4 px-md-5">
+      <div className="d-flex justify-content-between align-items-center mb-4">
+        <div>
+          <h3 className="fw-bold text-dark mb-1">Lead Conversion Propensity</h3>
         </div>
-        
+        <div className="d-flex gap-2">
+          <button className="btn btn-primary px-4 fw-bold shadow-sm" onClick={runScoring} disabled={loading}>
+            {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : null}
+            {loading ? "Scoring..." : "Run Scoring"}
+          </button>
+          <button className="btn btn-danger text-white btn-outline-secondary px-4 shadow-sm" onClick={clearFilters}>Reset</button>
+        </div>
       </div>
 
-      {/* ===== Pagination Selector ===== */}
-      {results.length > 0 && (
-        <div className="container mb-2 d-flex justify-content-between align-items-center">
-          <div className="text-muted">
-            
-            
+      {error && <div className="alert alert-danger shadow-sm border-0 mb-4">{error}</div>}
+
+      <div className="row g-4">
+        {/* ================= SECTION 1: CAMPAIGN ================= */}
+        <div className="col-lg-3">
+          <div className="card h-100 border-0 shadow-sm rounded-4">
+            <div className="card-body p-4 border-start border-primary border-4 rounded-4">
+              <h6 className="fw-bold text-primary mb-1">Leads As Per Campaign</h6>
+              <p className="text-muted extra-small mb-3">Select a specific active delivery campaign</p>
+              
+              <label className="form-label small fw-semibold">Campaign Name</label>
+              <select className="form-select bg-light border-0 py-2"
+                value={filters.campaign_id}
+                onChange={(e) => updateFilter("campaign_id", e.target.value)} 
+                disabled={isAnyOtherFilterSelected}
+              >
+                <option value="">Choose Campaign</option>
+                {campaigns.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+              </select>
+            </div>
           </div>
-          <div className="d-flex align-items-center">
-            <label className="me-2 small text-muted">Show per page:</label>
-            <select
-              className="form-select form-select-sm w-auto"
-              value={pageSize}
-              onChange={(e) =>
-                setPageSize(
-                  e.target.value === "ALL"
-                    ? "ALL"
-                    : parseInt(e.target.value)
-                )
-              }
-            >
-              <option value={5}>5</option>
+        </div>
+
+        {/* ================= SECTION 2: AS PER TAL (FIRMOGRAPHICS & ENGAGEMENT) ================= */}
+        <div className="col-lg-9">
+          <div className="card border-0 shadow-sm rounded-4">
+            <div className="card-body p-4 border-start border-success border-4 rounded-4">
+              <div className="d-flex justify-content-between align-items-center mb-3">
+                <h6 className="fw-bold text-success mb-0">As Per TAL (Target Account List)</h6>
+                
+              </div>
+
+              <div className="row g-3">
+                {/* Firmographics */}
+                <div className="col-12"><small className="text-uppercase fw-bold text-muted letter-spacing-1">Demographics / Firmographics</small></div>
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.country} onChange={(e) => updateFilter("country", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">Country</option>
+                    {countries.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.industry} onChange={(e) => updateFilter("industry", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">Industry</option>
+                    {industries.map(i => <option key={i.id} value={i.id}>{i.label}</option>)}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.job_level} onChange={(e) => updateFilter("job_level", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">Job Level</option>
+                    {jobLevels.map(j => <option key={j.id} value={j.id}>{j.label}</option>)}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.job_function} onChange={(e) => updateFilter("job_function", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">Job Function</option>
+                    {jobFunctions.map(j => <option key={j.id} value={j.id}>{j.label}</option>)}
+                  </select>
+                </div>
+
+                {/* Company Size */}
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.employee_size} onChange={(e) => updateFilter("employee_size", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">Employee Size</option>
+                    {employeeSizes.map(j => <option key={j.id} value={j.id}>{j.label}</option>)}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.revenue_size} onChange={(e) => updateFilter("revenue_size", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">Revenue Size</option>
+                    {revenueSizes.map(j => <option key={j.id} value={j.id}>{j.label}</option>)}
+                  </select>
+                </div>
+
+                {/* Sales & CRM Activity */}
+                <div className="col-12 mt-3"><small className="text-uppercase fw-bold text-muted">Sales & CRM Activity / Engagement</small></div>
+                <div className="col-md-3">
+                  <select className="form-select form-select-sm" value={filters.qa_status} onChange={e => updateFilter("qa_status", e.target.value)} disabled={isCampaignSelected}>
+                    <option value="">QA Status</option>
+                    {qaStatuses.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
+                  </select>
+                </div>
+                <div className="col-md-3">
+                  <input
+                    type={filters.start_date ? "date" : "text"} // Switch to date if a value exists
+                    className="form-control form-control-sm"
+                    value={filters.start_date}
+                    placeholder="Start Date"
+                    onFocus={(e) => (e.target.type = "date")} // Switch to date on click
+                    onBlur={(e) => !filters.start_date && (e.target.type = "text")} // Switch back to text if empty
+                    onChange={(e) => updateFilter("start_date", e.target.value)}
+                    disabled={isCampaignSelected}
+                  />
+                </div>
+
+                <div className="col-md-3">
+                  <input
+                    type={filters.end_date ? "date" : "text"}
+                    className="form-control form-control-sm"
+                    value={filters.end_date}
+                    placeholder="End Date"
+                    onFocus={(e) => (e.target.type = "date")}
+                    onBlur={(e) => !filters.end_date && (e.target.type = "text")}
+                    onChange={(e) => updateFilter("end_date", e.target.value)}
+                    disabled={isCampaignSelected}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Results Table Section */}
+      <div className="mt-5">
+        <div className="d-flex justify-content-between align-items-end mb-3">
+          <h5 className="fw-bold mb-0">Propensity Score Results</h5>
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-muted small">Show</span>
+            <select className="form-select form-select-sm w-auto" value={pageSize} onChange={(e) => setPageSize(e.target.value === "ALL" ? "ALL" : parseInt(e.target.value))}>
               <option value={10}>10</option>
               <option value={30}>30</option>
               <option value={50}>50</option>
@@ -485,17 +313,10 @@ export default function LeadScoring() {
             </select>
           </div>
         </div>
-      )}
-
-      {/* Results */}
-      <div className="container">
-        <TopLeadsTable 
-          leads={results} 
-          loading={loading}
-          pageSize={pageSize}
-        />
+        <div className="card border-0 shadow-sm rounded-4 overflow-hidden">
+          <TopLeadsTable leads={results} loading={loading} pageSize={pageSize} />
+        </div>
       </div>
     </div>
   );
 }
-

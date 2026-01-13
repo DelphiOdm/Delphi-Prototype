@@ -11,6 +11,7 @@ def get_campaigns(q: str = Query(None, description="optional substring filter on
     """
     Returns:
       { "campaigns": [ { "id": <Order_key_id>, "label": "<Order_id> | <Order_name>" }, ... ] }
+    Only campaigns which have at least one engaged lead are returned.
     Optional query `q` does case-insensitive substring match against Order_id or Order_name.
     """
     conn = None
@@ -26,24 +27,33 @@ def get_campaigns(q: str = Query(None, description="optional substring filter on
 
         if q:
             sql = """
-                SELECT Order_key_id AS id,
-                       TRIM(Order_id) AS order_code,
-                       TRIM(Order_name) AS order_name
-                FROM tblorder_details
-                WHERE Isactive = b'1'
-                  AND (LOWER(Order_id) LIKE LOWER(%s) OR LOWER(Order_name) LIKE LOWER(%s))
-                ORDER BY Order_name
+                SELECT DISTINCT 
+                       od.Order_key_id AS id,
+                       TRIM(od.Order_id) AS order_code,
+                       TRIM(od.Order_name) AS order_name
+                FROM tblorder_details od
+                INNER JOIN tblengaged_leads el 
+                    ON el.Order_key_id = od.Order_key_id
+                   AND el.Isdelete = b'0'
+                WHERE od.Isactive = b'1'
+                  AND (LOWER(od.Order_id) LIKE LOWER(%s) 
+                       OR LOWER(od.Order_name) LIKE LOWER(%s))
+                ORDER BY od.Order_name
                 LIMIT %s
             """
             params = (f"%{q}%", f"%{q}%", limit)
         else:
             sql = """
-                SELECT Order_key_id AS id,
-                       TRIM(Order_id) AS order_code,
-                       TRIM(Order_name) AS order_name
-                FROM tblorder_details
-                WHERE Isactive = b'1'
-                ORDER BY Order_name
+                SELECT DISTINCT 
+                       od.Order_key_id AS id,
+                       TRIM(od.Order_id) AS order_code,
+                       TRIM(od.Order_name) AS order_name
+                FROM tblorder_details od
+                INNER JOIN tblengaged_leads el 
+                    ON el.Order_key_id = od.Order_key_id
+                   AND el.Isdelete = b'0'
+                WHERE od.Isactive = b'1'
+                ORDER BY od.Order_name
                 LIMIT %s
             """
             params = (limit,)
@@ -55,11 +65,11 @@ def get_campaigns(q: str = Query(None, description="optional substring filter on
         for r in rows:
             code = r.get("order_code") or ""
             name = r.get("order_name") or ""
-            # combine with a separator, avoid leading/trailing spaces if one part missing
             if code and name:
                 label = f"{code} | {name}"
             else:
                 label = code or name or "Unknown Campaign"
+
             campaigns.append({"id": r["id"], "label": label})
 
         return {"campaigns": campaigns}

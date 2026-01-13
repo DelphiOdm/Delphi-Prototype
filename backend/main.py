@@ -406,11 +406,14 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
+
 load_dotenv()
 
 from apis.leadscores import router as leadscores_router
+from apis.dashboard import router as dashboard_router
 
-app = FastAPI(title="Delphi Lead Scoring API")
+app = FastAPI()
 
 # CORS
 frontend = os.getenv("FRONTEND_URL", "http://localhost:3000")
@@ -424,6 +427,7 @@ app.add_middleware(
 
 # Mount LeadScoring APIs
 app.include_router(leadscores_router)
+app.include_router(dashboard_router)
 
 @app.get("/health")
 def health():

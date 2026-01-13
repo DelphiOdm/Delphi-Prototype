@@ -1,96 +1,4 @@
 # # backend/apis/leadscores/leads/get_campaign_leads.py
-# from fastapi import APIRouter, Query, HTTPException
-# from db import get_conn
-# import math
-# import logging
-
-# router = APIRouter()
-
-# @router.get("/campaign-leads")
-# def get_campaign_leads(
-#     order_id: int | None = Query(None),
-#     country_id: int | None = Query(None),
-#     industry_id: int | None = Query(None),
-#     job_level_id: int | None = Query(None),
-#     job_function_id: int | None = Query(None),
-#     employee_size_id: int | None = Query(None),
-#     revenue_size_id: int | None = Query(None),
-#     start_date: str | None = Query(None),
-#     end_date: str | None = Query(None),
-#     page: int = Query(1, ge=1),
-#     page_size: int = Query(25, ge=1, le=100)
-# ):
-#     conn = None
-#     cur = None
-
-#     try:
-#         conn = get_conn()
-#         cur = conn.cursor(dictionary=True)
-
-#         # ================= CAMPAIGN FLOW =================
-#         if order_id:
-#             cur.callproc(
-#                 "Usp_get_campaign_leads",
-#                 (order_id, page, page_size)
-#             )
-
-#         # ================= FILTER FLOW =================
-#         else:
-#             cur.callproc(
-#                 "Usp_get_filtered_leads",
-#                 (
-#                     country_id,
-#                     industry_id,
-#                     # job_title,
-#                     job_level_id,
-#                     job_function_id,
-#                     employee_size_id,
-#                     revenue_size_id,
-#                     start_date,
-#                     end_date,
-#                     page,
-#                     page_size
-#                 )
-#             )
-
-#         # -------- First result set (TOTAL) --------
-#         total = 0
-#         for result in cur.stored_results():
-#             row = result.fetchone()
-#             if row and "total" in row:
-#                 total = row["total"]
-#                 break
-        
-    
-
-
-#         # -------- Second result set (DATA) --------
-#         leads = []
-#         for result in cur.stored_results():
-#             leads = result.fetchall()
-
-#         return {
-#             "page": page,
-#             "page_size": page_size,
-#             "total": total,
-#             "total_pages": math.ceil(total / page_size) if page_size else 1,
-#             "leads": leads
-#         }
-
-#     except Exception as e:
-#         logging.exception("Lead fetch failed")
-#         raise HTTPException(status_code=500, detail=str(e))
-
-#     finally:
-#         if cur:
-#             cur.close()
-#         if conn:
-#             conn.close()
-
-
-
-# backend/apis/leadscores/leads/get_campaign_leads.py
-
 from fastapi import APIRouter, Query, HTTPException
 from db import get_conn
 import math
@@ -107,6 +15,7 @@ def get_campaign_leads(
     job_function_id: int | None = Query(None),
     employee_size_id: int | None = Query(None),
     revenue_size_id: int | None = Query(None),
+    qa_status: int | None = None,
     start_date: str | None = Query(None),
     end_date: str | None = Query(None),
     page: int = Query(1, ge=1),
@@ -137,6 +46,7 @@ def get_campaign_leads(
                     job_function_id,
                     employee_size_id,
                     revenue_size_id,
+                     qa_status,
                     start_date,
                     end_date,
                     page,

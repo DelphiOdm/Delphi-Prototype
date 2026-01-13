@@ -2,12 +2,14 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Login from "./components/Login";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SuperManagerDashboard from "./components/SuperManagerDashboard";
+import SuperManagerDashboard from "./components/Dashboard/SuperManagerDashboard";
 import CampaignDetails from "./components/CampaignDetails";
 import CompanyDetails from "./components/CompanyDetails";
 import Header from "./components/Header";
 import LeadScoring from "./components/LeadScoring/LeadScoring";
 import LeadDetail from "./components/LeadScoring/LeadDetail";
+import ScoreConfiguration from "./components/LeadScoring/ScoreConfiguration";
+import ScoreValuesConfig from "./components/LeadScoring/ScoreValuesConfig";
 
 function App() {
   return (
@@ -20,6 +22,7 @@ function App() {
             <Route path="/" element={<Login />} />
 
             {/* ================= PROTECTED ================= */}
+                        
             <Route
               path="/SuperManagerDashboard"
               element={
@@ -37,6 +40,25 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
+                    <Route
+          path="/ScoreConfiguration"
+          element={
+            <ProtectedRoute>
+              <ScoreConfiguration />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ScoreConfiguration/values/:parameterId"
+          element={
+            <ProtectedRoute>
+              <ScoreValuesConfig />
+            </ProtectedRoute>
+          }
+        />
+
 
             {/* ===== Campaign flow ===== */}
             <Route

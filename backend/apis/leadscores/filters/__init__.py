@@ -9,6 +9,7 @@ from .get_job_titles import router as job_titles_router
 from .get_employee_sizes import router as employee_sizes_router
 from .get_revenue_sizes import router as revenue_sizes_router
 from .get_campaigns import router as campaigns_router
+from .get_qa_status import router as qa_status_router
 
 router = APIRouter(prefix="/filters")
 
@@ -20,3 +21,4 @@ router.include_router(job_titles_router)
 router.include_router(employee_sizes_router)
 router.include_router(revenue_sizes_router)
 router.include_router(campaigns_router)
+router.include_router(qa_status_router)

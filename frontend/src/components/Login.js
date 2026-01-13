@@ -22,7 +22,7 @@ function Login() {
         }
 
         // Static Super Admin Bypass
-        if (email === "superadmin@xdbs.in" && password === "super@1234") {
+        if (email === "admin@xtsworld.in" && password === "xts@1234") {
             const staticUser = {
                 email: "superadmin@xdbs.in",
                 fullname: "Sameer Datta",
