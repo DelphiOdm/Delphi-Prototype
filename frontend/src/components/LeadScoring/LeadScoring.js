@@ -12,6 +12,8 @@ export default function LeadScoring() {
   const [revenueSizes, setRevenueSizes] = useState([]);
   const [qaStatuses, setQaStatuses] = useState([]);
 
+  
+
   const [filters, setFilters] = useState({
     campaign_id: "",
     country: "",
@@ -26,11 +28,12 @@ export default function LeadScoring() {
     limit: 100
   });
 
+  
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState([]);
   const [runInfo, setRunInfo] = useState(null);
   const [error, setError] = useState("");
-  const [pageSize, setPageSize] = useState(30);
+  const [pageSize, setPageSize] = useState(10);
 
   const isCampaignSelected = Boolean(filters.campaign_id);
   const isAnyOtherFilterSelected = Boolean(
@@ -53,7 +56,11 @@ export default function LeadScoring() {
     campaignLeads: `${API_BASE}/leadscores/leads/campaign-leads`,
   };
 
+  const isAnyFilterSelected = Object.values(filters).some(v => v !== "" && v !== null);
+
   useEffect(() => {
+    defaultScoring();
+  
     if (results.length > 0) runScoring();
     fetchAllFilters();
     // eslint-disable-next-line
@@ -171,6 +178,39 @@ export default function LeadScoring() {
     }
   };
 
+  const defaultScoring = async () => {
+    setError("");
+    setLoading(true);
+    try {
+      const params = {
+        page: 1,
+        page_size: pageSize === "ALL" ? 10000 : pageSize
+      };
+
+      if (filters.campaign_id) {
+        params.order_id = filters.campaign_id;
+      } else {
+        params.country_id = filters.country || null;
+        params.industry_id = filters.industry || null;
+        params.job_level_id = filters.job_level || null;
+        params.job_function_id = filters.job_function || null;
+        params.employee_size_id = filters.employee_size || null;
+        params.revenue_size_id = filters.revenue_size || null;
+        params.qa_status = filters.qa_status || null;
+        params.start_date = filters.start_date || null;
+        params.end_date = filters.end_date || null;
+      }
+
+      const res = await axios.get(ENDPOINTS.campaignLeads, { params });
+      setResults(res.data.leads || []);
+      setRunInfo({ total: res.data.total, total_pages: res.data.total_pages });
+    } catch (err) {
+      setError("Failed to fetch leads");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="container-fluid bg-light min-vh-100 py-4 px-md-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
@@ -182,7 +222,7 @@ export default function LeadScoring() {
             {loading ? <span className="spinner-border spinner-border-sm me-2"></span> : null}
             {loading ? "Scoring..." : "Run Scoring"}
           </button>
-          <button className="btn btn-danger text-white btn-outline-secondary px-4 shadow-sm" onClick={clearFilters}>Reset</button>
+          <button className="btn btn-danger text-white btn-outline-secondary px-4 shadow-sm" onClick={()=>{clearFilters(); defaultScoring();}}>Reset</button>
         </div>
       </div>
 

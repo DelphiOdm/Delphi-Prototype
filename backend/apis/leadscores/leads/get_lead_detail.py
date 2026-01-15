@@ -34,7 +34,7 @@ def get_lead_detail(lead_id: int):
 
                 lm.Email_id,
 
-                lm.Phone_number,  /* ✅ Added phone number */
+                lm.Phone_number, 
 
                 lm.Job_title,
 
@@ -65,7 +65,7 @@ def get_lead_detail(lead_id: int):
                 END AS isAudited
 
 
-
+            
             FROM tblleads_masterlist lm
 
             LEFT JOIN tblengaged_leads el

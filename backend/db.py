@@ -49,7 +49,7 @@ dbconfig = {
 }
 
 # a small connection pool
-connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=6, **dbconfig)
+connection_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=20, **dbconfig)
 
 def get_conn():
     try:
