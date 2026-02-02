@@ -10,6 +10,8 @@ from .get_employee_sizes import router as employee_sizes_router
 from .get_revenue_sizes import router as revenue_sizes_router
 from .get_campaigns import router as campaigns_router
 from .get_qa_status import router as qa_status_router
+from .get_lead_type import router as lead_type_router
+from .get_lead_source import router as lead_source_router
 
 router = APIRouter(prefix="/filters")
 
@@ -22,3 +24,5 @@ router.include_router(employee_sizes_router)
 router.include_router(revenue_sizes_router)
 router.include_router(campaigns_router)
 router.include_router(qa_status_router)
+router.include_router(lead_type_router)
+router.include_router(lead_source_router)

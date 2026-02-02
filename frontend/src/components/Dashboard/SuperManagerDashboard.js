@@ -14,7 +14,7 @@ const years = Array.from(
 
 export default function SuperManagerDashboard() {
   const navigate = useNavigate();
-  const [year, setYear] = useState(2022);
+  const [year, setYear] = useState(2024);
   const [topLeads, setTopLeads] = useState([]);
   const [monthlyStats, setMonthlyStats] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -55,7 +55,9 @@ export default function SuperManagerDashboard() {
   const getScoreBadge = (score) => {
     const num = Number(score || 0);
     if (num >= 80) return "bg-success text-white";
-    if (num >= 60) return "bg-warning text-dark";
+    if (num >= 60 ) return "bg-primary text-white";
+    if (num >= 50 ) return "bg-warning text-dark";
+    if (num < 50) return "bg-danger text-white";
     return "bg-secondary text-white";
   };
 
@@ -76,7 +78,20 @@ export default function SuperManagerDashboard() {
 
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 ">
         <div>
-          <h3 className="fw-bold text-dark mb-1">Dashboard Overview</h3>
+          <h3 className="fw-bold text-dark mb-1 dashboard-title">Dashboard Overview</h3>
+          <style>{`
+        .dashboard-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-weight: 700;
+            font-size: 1.2rem;
+            letter-spacing: 3px;
+            background: linear-gradient(90deg, #212529 0%, #0d6efd 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+    `}</style>
           <p className="text-secondary mb-0">Track performance metrics and lead propensity.</p>
         </div>
 
@@ -124,7 +139,7 @@ export default function SuperManagerDashboard() {
             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
               <div>
                 <h5 className="fw-bold text-dark mb-0">Top Performing Leads</h5>
-                <span className="text-muted small">Highest propensity scores for {year}</span>
+                <span className="text-muted small">Propensity scores for {year} leads</span>
               </div>
 
               {!loading && topLeads.length > 0 && (

@@ -1,3 +1,4 @@
+// frontend/src/App.js
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 
 import Login from "./components/Login";
@@ -10,10 +11,15 @@ import LeadScoring from "./components/LeadScoring/LeadScoring";
 import LeadDetail from "./components/LeadScoring/LeadDetail";
 import ScoreConfiguration from "./components/LeadScoring/ScoreConfiguration";
 import ScoreValuesConfig from "./components/LeadScoring/ScoreValuesConfig";
+import ICPScoringConfig from "./components/ICP/ICPScoringConfig";
 
+import GenerateICP from "./components/ICP/GenerateICP";
+
+import Nav_Sidebar from "./components/Nav_Sidebar";
 function App() {
   return (
     <Router>
+      <Nav_Sidebar />
       <Header />
       <div className="d-flex">
         <div className="flex-grow-1">
@@ -31,6 +37,7 @@ function App() {
                 </ProtectedRoute>
               }
             />
+
 
             <Route
               path="/LeadScoring"
@@ -55,6 +62,24 @@ function App() {
           element={
             <ProtectedRoute>
               <ScoreValuesConfig />
+            </ProtectedRoute>
+          }
+        />
+
+         <Route
+          path="/ICP/GenerateICP"
+          element={
+            <ProtectedRoute>
+              <GenerateICP />
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/ICP/ICPScoringConfig"
+          element={
+            <ProtectedRoute>
+              <ICPScoringConfig />
             </ProtectedRoute>
           }
         />

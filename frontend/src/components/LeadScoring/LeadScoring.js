@@ -23,9 +23,11 @@ export default function LeadScoring() {
     employee_size: "",
     revenue_size: "",
     qa_status: "",
+    campaign_suppression: "all",
+    tal_suppression: "all",
     start_date: "",
     end_date: "",
-    limit: 100
+    limit: 1000
   });
 
   
@@ -33,7 +35,7 @@ export default function LeadScoring() {
   const [results, setResults] = useState([]);
   const [runInfo, setRunInfo] = useState(null);
   const [error, setError] = useState("");
-  const [pageSize, setPageSize] = useState(10);
+  const [pageSize, setPageSize] = useState(100);
 
   const isCampaignSelected = Boolean(filters.campaign_id);
   const isAnyOtherFilterSelected = Boolean(
@@ -59,12 +61,17 @@ export default function LeadScoring() {
   const isAnyFilterSelected = Object.values(filters).some(v => v !== "" && v !== null);
 
   useEffect(() => {
-    defaultScoring();
-  
-    if (results.length > 0) runScoring();
-    fetchAllFilters();
-    // eslint-disable-next-line
-  }, [pageSize]);
+  defaultScoring();
+  fetchAllFilters();
+  // eslint-disable-next-line
+}, [pageSize]);
+
+useEffect(() => {
+  if (!loading) {
+    runScoring();
+  }
+  // eslint-disable-next-line
+}, [filters.campaign_suppression, filters.tal_suppression, filters.campaign_id]);
 
   const fetchAllFilters = async () => {
     try {
@@ -137,8 +144,8 @@ export default function LeadScoring() {
   const clearFilters = () => {
     setFilters({
       campaign_id: "", country: "", industry: "", job_level: "",
-      job_function: "", employee_size: "", revenue_size: "",
-      qa_status: "", start_date: "", end_date: "", limit: 100
+      job_function: "", employee_size: "", revenue_size: "", campaign_suppression: "all",
+      tal_suppression: "all", qa_status: "", start_date: "", end_date: "", limit: 100
     });
     setResults([]);
     setRunInfo(null);
@@ -149,13 +156,16 @@ export default function LeadScoring() {
     setError("");
     setLoading(true);
     try {
-      const params = {
-        page: 1,
-        page_size: pageSize === "ALL" ? 10000 : pageSize
-      };
+      const params = { page: 1 };
+
+      if (pageSize !== "ALL") {
+        params.page_size = pageSize;
+      }
+
 
       if (filters.campaign_id) {
         params.order_id = filters.campaign_id;
+        params.suppression = filters.campaign_suppression;
       } else {
         params.country_id = filters.country || null;
         params.industry_id = filters.industry || null;
@@ -164,6 +174,7 @@ export default function LeadScoring() {
         params.employee_size_id = filters.employee_size || null;
         params.revenue_size_id = filters.revenue_size || null;
         params.qa_status = filters.qa_status || null;
+        params.suppression = filters.tal_suppression;
         params.start_date = filters.start_date || null;
         params.end_date = filters.end_date || null;
       }
@@ -182,13 +193,16 @@ export default function LeadScoring() {
     setError("");
     setLoading(true);
     try {
-      const params = {
-        page: 1,
-        page_size: pageSize === "ALL" ? 10000 : pageSize
-      };
+      const params = { page: 1 };
+
+      if (pageSize !== "ALL") {
+        params.page_size = pageSize;
+      }
+
 
       if (filters.campaign_id) {
         params.order_id = filters.campaign_id;
+        params.suppression = filters.campaign_suppression;
       } else {
         params.country_id = filters.country || null;
         params.industry_id = filters.industry || null;
@@ -197,6 +211,7 @@ export default function LeadScoring() {
         params.employee_size_id = filters.employee_size || null;
         params.revenue_size_id = filters.revenue_size || null;
         params.qa_status = filters.qa_status || null;
+        params.suppression = filters.tal_suppression;
         params.start_date = filters.start_date || null;
         params.end_date = filters.end_date || null;
       }
@@ -230,24 +245,44 @@ export default function LeadScoring() {
 
       <div className="row g-4">
         {/* ================= SECTION 1: CAMPAIGN ================= */}
-        <div className="col-lg-3">
-          <div className="card h-100 border-0 shadow-sm rounded-4">
-            <div className="card-body p-4 border-start border-primary border-4 rounded-4">
-              <h6 className="fw-bold text-primary mb-1">Leads As Per Campaign</h6>
-              <p className="text-muted extra-small mb-3">Select a specific active delivery campaign</p>
-              
-              <label className="form-label small fw-semibold">Campaign Name</label>
-              <select className="form-select bg-light border-0 py-2"
-                value={filters.campaign_id}
-                onChange={(e) => updateFilter("campaign_id", e.target.value)} 
-                disabled={isAnyOtherFilterSelected}
-              >
-                <option value="">Choose Campaign</option>
-                {campaigns.map(c => <option key={c.id} value={c.id}>{c.label}</option>)}
-              </select>
-            </div>
-          </div>
-        </div>
+<div className="col-lg-3">
+  <div className="card h-100 border-0 shadow-sm rounded-4">
+    <div className="card-body p-4 border-start border-primary border-4 rounded-4">
+      <h6 className="fw-bold text-primary mb-1">Leads As Per Campaign</h6>
+      <p className="text-muted extra-small mb-3">
+        Select a specific active delivery campaign
+      </p>
+
+      {/* Campaign Dropdown */}
+      <label className="form-label small fw-semibold">Campaign Name</label>
+      <select
+        className="form-select bg-light border-0 py-2 mb-3"
+        value={filters.campaign_id}
+        onChange={(e) => updateFilter("campaign_id", e.target.value)}
+        disabled={isAnyOtherFilterSelected}
+      >
+        <option value="">Choose Campaign</option>
+        {campaigns.map((c) => (
+          <option key={c.id} value={c.id}>{c.label}</option>
+        ))}
+      </select>
+
+      {/* Suppression Dropdown */}
+      <label className="form-label small fw-semibold">Suppression</label>
+      <select
+        className="form-select bg-light border-0 py-2"
+        value={filters.campaign_suppression}
+        onChange={(e) => updateFilter("campaign_suppression", e.target.value)}
+        disabled={!filters.campaign_id}
+      >
+        <option value="all">All Leads</option>
+        <option value="suppressed">Suppressed Leads</option>
+        <option value="not_suppressed">Unsuppressed Leads</option>
+      </select>
+    </div>
+  </div>
+</div>
+
 
         {/* ================= SECTION 2: AS PER TAL (FIRMOGRAPHICS & ENGAGEMENT) ================= */}
         <div className="col-lg-9">
@@ -308,6 +343,20 @@ export default function LeadScoring() {
                     {qaStatuses.map(q => <option key={q.id} value={q.id}>{q.label}</option>)}
                   </select>
                 </div>
+
+                <div className="col-md-3">
+                  <select
+                    className="form-select form-select-sm"
+                    value={filters.tal_suppression}
+                    onChange={(e) => updateFilter("tal_suppression", e.target.value)}
+                    disabled={isCampaignSelected}
+                  >
+                    <option value="all">All Leads</option>
+                    <option value="suppressed">Supression Leads</option>
+                    <option value="not_suppressed">Unsuppressed Leads</option>
+                  </select>
+                </div>
+
                 <div className="col-md-3">
                   <input
                     type={filters.start_date ? "date" : "text"} // Switch to date if a value exists
@@ -347,9 +396,9 @@ export default function LeadScoring() {
             <span className="text-muted small">Show</span>
             <select className="form-select form-select-sm w-auto" value={pageSize} onChange={(e) => setPageSize(e.target.value === "ALL" ? "ALL" : parseInt(e.target.value))}>
               <option value={10}>10</option>
-              <option value={30}>30</option>
-              <option value={50}>50</option>
               <option value={100}>100</option>
+              <option value={500}>500</option>
+              <option value={1000}>1000</option>
             </select>
           </div>
         </div>

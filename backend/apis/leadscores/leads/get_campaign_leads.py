@@ -15,11 +15,12 @@ def get_campaign_leads(
     job_function_id: int | None = Query(None),
     employee_size_id: int | None = Query(None),
     revenue_size_id: int | None = Query(None),
-    qa_status: int | None = None,
+    qa_status: int | None = Query(None),
+    suppression: str = Query("all"),
     start_date: str | None = Query(None),
     end_date: str | None = Query(None),
     page: int = Query(1, ge=1),
-    page_size: int = Query(25, ge=1, le=100)
+    page_size: int | None = Query(None, ge=1)
 ):
     conn = None
     cur = None
@@ -27,12 +28,18 @@ def get_campaign_leads(
     try:
         conn = get_conn()
         cur = conn.cursor(dictionary=True)
-
+        limit = page_size if page_size else 1000000 
+        supp_map = {
+            "all": 0,
+            "suppressed": 1,
+            "not_suppressed": 2
+        }
+        supp_type = supp_map.get(suppression, 0)
         # ================= CAMPAIGN FLOW =================
         if order_id:
             cur.callproc(
                 "Usp_get_campaign_leads",
-                (order_id, page, page_size)
+                (order_id, page, page_size, supp_type)
             )
 
         # ================= FILTER FLOW =================
@@ -46,11 +53,12 @@ def get_campaign_leads(
                     job_function_id,
                     employee_size_id,
                     revenue_size_id,
-                     qa_status,
+                    qa_status,
                     start_date,
                     end_date,
+                    supp_type,
                     page,
-                    page_size
+                    limit
                 )
             )
 
@@ -66,6 +74,8 @@ def get_campaign_leads(
         leads = []
         for result in cur.stored_results():
             leads = result.fetchall()
+
+            
 
         # ================= TOTAL SCORE ATTACH =================
         lead_ids = [l["Lead_id"] for l in leads]

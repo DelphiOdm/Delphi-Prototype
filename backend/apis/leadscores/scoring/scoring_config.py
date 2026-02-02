@@ -2,15 +2,10 @@ from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
 from db import get_conn
-
 router = APIRouter(prefix="/scoring-config", tags=["Scoring Configuration"])
-
-
 class WeightUpdate(BaseModel):
     parameter_id: int
     weight: int
-
-
 PARAMETER_TABLE_MAP = {
     "JOB_LEVEL": ("Mst_tbljoblevel", "Job_level_id", "Job_level_desc"),
     "JOB_FUNCTION": ("Mst_tbljobfunction", "Jobfunction_id", "Jobfunction_desc"),
@@ -21,8 +16,6 @@ PARAMETER_TABLE_MAP = {
     "PRIMARY_REASON": ("Mst_tblqualityaudit_primary_reason", "QAprimaryreason_id", "QAprimaryreason_desc"),
     "CALL_RATING": ("Mst_tblqualityaudit_callrating", "QAcallrating_id", "QAcallrating_desc"),
 }
-
-
 @router.get("/parameters")
 def get_parameters():
     conn = get_conn()
