@@ -12,7 +12,8 @@ export default function GlassNavigation() {
     const tabs = [
         { label: "Dashboard", icon: "bi-grid-1x2", path: "/SuperManagerDashboard" },
         { label: "Propensity Scoring", icon: "bi-graph-up-arrow", path: "/leadscoring" },
-        { label: "Create ICP", icon: "bi-person-badge", path: "/ICP/GenerateICP" },
+        // { label: "Create ICP", icon: "bi-person-badge", path: "/ICP/GenerateICP" },
+         { label: "ICP", icon: "bi-person-badge", path: "/ICP/CreateIdealTAL" },
      
         
         // ... add the rest of your 10 tabs here

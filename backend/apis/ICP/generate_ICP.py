@@ -1,21 +1,75 @@
-# backend/apis/ICP/generate_tal.py
-from fastapi import APIRouter
+# backend/apis/ICP/generate_ICP.py
+from fastapi import APIRouter, HTTPException
+from typing import Optional
+from db import get_conn
 
-router = APIRouter(prefix="/leadscores", tags=["ICP Demo"])
+router = APIRouter(prefix="/icp", tags=["ICP Scoring"])
 
-@router.post("/generate-tal-demo")
-async def generate_tal_demo():
-    return {
-        "data": [
-            {"lead_id":"256486","company":"Zoho Corp","industry":"SaaS","job_title":"VP IT","icp_fit":88,"propensity":92,"quadrant":"Q1 – Core Growth Engine","action":"Immediate sales follow-up"},
-            {"lead_id":"652356","company":"Paytm","industry":"BFSI","job_title":"Director Ops","icp_fit":82,"propensity":45,"quadrant":"Q2 – Future Pipeline","action":"Nurture (case studies, webinars)"},
-            {"lead_id":"365214","company":"Global Health","industry":"Healthcare","job_title":"CIO","icp_fit":74,"propensity":78,"quadrant":"Q1 – Core Growth Engine","action":"Assign senior sales rep"},
-            {"lead_id":"785256","company":"DMart","industry":"Retail","job_title":"IT Manager","icp_fit":48,"propensity":83,"quadrant":"Q3 – Opportunistic","action":"Tactical close if low effort"},
-            {"lead_id":"965236","company":"Udemy","industry":"Education","job_title":"Admin Lead","icp_fit":42,"propensity":38,"quadrant":"Q4 – De-prioritize","action":"Archive / long-term nurture"},
-            {"lead_id":"789445","company":"CloudNova","industry":"SaaS","job_title":"CTO","icp_fit":91,"propensity":63,"quadrant":"Q2 – Future Pipeline","action":"High-touch ABM nurture"},
-            {"lead_id":"963852","company":"DHL","industry":"Logistics","job_title":"Ops Head","icp_fit":55,"propensity":72,"quadrant":"Q3 – Opportunistic","action":"Conditional pursuit"},
-            {"lead_id":"741852","company":"Lombard","industry":"Insurance","job_title":"CXO","icp_fit":87,"propensity":29,"quadrant":"Q2 – Future Pipeline","action":"Warm-up campaigns"},
-            {"lead_id":"254256","company":"XYZ Media","industry":"Media","job_title":"Marketing Lead","icp_fit":34,"propensity":61,"quadrant":"Q3 – Opportunistic","action":"Low-cost email follow-up"},
-            {"lead_id":"365456","company":"Goldman Sachs","industry":"BFSI","job_title":"CIO","icp_fit":90,"propensity":88,"quadrant":"Q1 – Core Growth Engine","action":"Fast-track to proposal"}
+
+@router.get("/leads")
+def get_icp_leads(
+    country_id: Optional[int] = None,
+    industry_id: Optional[int] = None,
+    employee_size_id: Optional[int] = None,
+    revenue_size_id: Optional[int] = None,
+    job_level_id: Optional[int] = None,
+    job_function_id: Optional[int] = None,
+    # lead_type_id: Optional[int] = None,
+    # lead_source_domain: Optional[str] = None,
+    # qa_status_id: Optional[int] = None,
+
+    page: int = 1,
+    page_size: int = 10
+):
+    try:
+        conn = get_conn()
+        cursor = conn.cursor(dictionary=True)
+
+        #  EXACT 11 PARAMS IN CORRECT ORDER
+        proc_args = [
+            country_id,
+            industry_id,
+            employee_size_id,
+            revenue_size_id,
+            job_level_id,
+            job_function_id,
+            #lead_type_id,
+            # lead_source_domain,
+            # qa_status_id,
+            page,
+            page_size
         ]
-    }
+
+        cursor.callproc("Usp_get_icp_filtered_leads", proc_args)
+
+        # leads = []
+        # for result in cursor.stored_results():
+        #     leads = result.fetchall()
+
+        # return {
+        #     "page": page,
+        #     "page_size": page_size,
+        #     "leads": leads
+        # }
+
+        results = list(cursor.stored_results())
+
+        # ✅ Result Set 1 → total count
+        total = results[0].fetchone()["total"]
+
+        # ✅ Result Set 2 → paginated leads
+        leads = results[1].fetchall()
+
+        return {
+            "page": page,
+            "page_size": page_size,
+            "total": total,          # ✅ Required for pagination
+            "leads": leads
+        }
+
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+    finally:
+        cursor.close()
+        conn.close()

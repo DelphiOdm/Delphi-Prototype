@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import MonthlyLeadsBarChart from "./MonthlyLeadsBarChart";
+import '../../styles/common.css';
 
 const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
@@ -78,8 +79,8 @@ export default function SuperManagerDashboard() {
 
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 ">
         <div>
-          <h3 className="fw-bold text-dark mb-1 dashboard-title">Dashboard Overview</h3>
-          <style>{`
+          <h3 className="fw-bold text-dark mb-1 title-style">Dashboard Overview</h3>
+          {/* <style>{`
         .dashboard-title {
             font-family: 'Space Grotesk', sans-serif;
             font-weight: 700;
@@ -91,7 +92,7 @@ export default function SuperManagerDashboard() {
             position: relative;
             transition: all 0.3s ease;
         }
-    `}</style>
+    `}</style> */}
           <p className="text-secondary mb-0">Track performance metrics and lead propensity.</p>
         </div>
 

@@ -230,7 +230,7 @@ useEffect(() => {
     <div className="container-fluid bg-light min-vh-100 py-4 px-md-5">
       <div className="d-flex justify-content-between align-items-center mb-4">
         <div>
-          <h3 className="fw-bold text-dark mb-1">Lead Conversion Propensity</h3>
+          <h3 className="fw-bold text-dark mb-1 title-style">Lead Conversion Propensity</h3>
         </div>
         <div className="d-flex gap-2">
           <button className="btn btn-primary px-4 fw-bold shadow-sm" onClick={runScoring} disabled={loading}>

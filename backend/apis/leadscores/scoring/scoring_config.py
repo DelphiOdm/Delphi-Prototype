@@ -1,3 +1,4 @@
+# backend/apis/leadscores/scoring/scoring_config.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel
 from typing import List
@@ -67,6 +68,7 @@ def get_scoring_values(parameter_id: int):
             SELECT parameter_code
             FROM mst_scoring_parameter
             WHERE parameter_id = %s
+              AND is_active = 1
         """, (parameter_id,))
         row = cursor.fetchone()
 

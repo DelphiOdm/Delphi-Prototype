@@ -12,6 +12,8 @@ from .get_campaigns import router as campaigns_router
 from .get_qa_status import router as qa_status_router
 from .get_lead_type import router as lead_type_router
 from .get_lead_source import router as lead_source_router
+from .get_brands import router as brands_router
+
 
 router = APIRouter(prefix="/filters")
 
@@ -26,3 +28,4 @@ router.include_router(campaigns_router)
 router.include_router(qa_status_router)
 router.include_router(lead_type_router)
 router.include_router(lead_source_router)
+router.include_router(brands_router)

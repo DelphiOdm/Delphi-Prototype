@@ -210,7 +210,7 @@ def get_lead_detail(lead_id: int):
                         SELECT Lead_id, MAX(Engage_id) AS max_engage_id
                         FROM tblengaged_leads
                         WHERE Isdelete = b'0'
-                        AND Isaudited = b'1'
+                             AND Isaudited = b'1'
                         GROUP BY Lead_id
                     ) e2
                     ON e1.Lead_id = e2.Lead_id

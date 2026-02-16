@@ -130,7 +130,7 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                         </button>
 
                         <button
-                            onClick={() => { navigate("/ICP/ICPScoringConfig"); toggleSidebar(); }}
+                            onClick={() => { navigate("/ICP"); toggleSidebar(); }}
                             className="list-group-item list-group-item-action border rounded-3 d-flex align-items-center gap-3 py-3"
                             style={{ transition: 'all 0.2s ease' }}
                         >
