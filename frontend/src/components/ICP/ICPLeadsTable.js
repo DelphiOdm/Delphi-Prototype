@@ -64,6 +64,44 @@ export default function ICPLeadsTable({
           );
 
 
+          //-------------------------------------------------------
+                      // Quadrant Priority Sort
+            const sortedLeads = [...leads].sort((a, b) => {
+              const quadA = getICPQuadrant(
+                Number(a.icp_score),
+                Number(a.propensity_score)
+              );
+
+              const quadB = getICPQuadrant(
+                Number(b.icp_score),
+                Number(b.propensity_score)
+              );
+
+              // Quadrant ranking order
+              const quadrantPriority = {
+                Q1: 1, // High ICP + High Propensity
+                Q2: 2, // High ICP + Low Propensity
+                Q3: 3, // Low ICP + High Propensity
+                Q4: 4, // Low ICP + Low Propensity
+              };
+
+              const rankA = quadrantPriority[quadA?.quadrant] || 99;
+              const rankB = quadrantPriority[quadB?.quadrant] || 99;
+
+              // 1st Priority: Quadrant order
+              if (rankA !== rankB) return rankA - rankB;
+
+              // 2nd Priority: Higher ICP inside same quadrant
+              if (Number(b.icp_score) !== Number(a.icp_score))
+                return Number(b.icp_score) - Number(a.icp_score);
+
+              // 3rd Priority: Higher Propensity inside same quadrant
+              return Number(b.propensity_score) - Number(a.propensity_score);
+            });
+
+          //------------------------------------------------------- 
+
+
             return (
               <tr key={l.Lead_id}>
                 <td className="ps-4 fw-bold">{rank}</td>
@@ -91,7 +129,7 @@ export default function ICPLeadsTable({
                 <td>{l.industry || "—"}</td>
                 
                 <td className="text-center">
-                  <span className="badge bg-warning rounded-pill">
+                  <span className="badge text-dark bg-warning rounded-pill">
                     {quadrant?.quadrant || "—"}
                   </span>
 
@@ -124,9 +162,6 @@ export default function ICPLeadsTable({
                     </span>
                   )}
                 </td>
-
-
-
                 <td>
                   <button
                     className="btn btn-sm btn-outline-primary rounded-pill"

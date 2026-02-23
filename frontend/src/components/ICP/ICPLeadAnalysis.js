@@ -455,16 +455,20 @@ export default function ICPLeadAnalysis() {
         </div>
 
         {/* ===================================================== */}
-        {/* STEP 2: ICP SCORE STRUCTURE */}
+        {/* STEP 2: ICP Weights and SCORE STRUCTURE */}
         {/* ===================================================== */}
         <div className="card shadow-sm border-0 rounded-4 p-4 mb-4">
           <h5 className="fw-bold mb-2">
-            Step 2: ICP Score Structure (0–100)
+            Step 2: 
           </h5>
 
-          <p className="text-muted small">
-            ICP Score answers:
-            <b> “How closely does this lead match our best-fit customer?”</b>
+          <h5 className="fw-bold text-center mb-2">
+            A. ICP Weight Structure (Out of 100%)
+          </h5>
+
+          <p className="text-muted text-center small">
+            ICP Weights answers:
+            <b> “How closely does this lead parameter match our best-fit customer?”</b>
           </p>
 
           <div className="fw-bold text-center my-3">
@@ -477,7 +481,7 @@ export default function ICPLeadAnalysis() {
             <thead className="table-light">
               <tr>
                 <th>Component</th>
-                <th>Max Score</th>
+                <th>Max Weights</th>
               </tr>
             </thead>
             <tbody>
@@ -503,7 +507,234 @@ export default function ICPLeadAnalysis() {
               </tr>
             </tbody>
           </table>
+
+
+            <div className="fw-bold text-center mb-4">
+            <h5 className="fw-bold mb-2">
+            B. ICP Scoring Structure (Between 0-100)
+          </h5>
+          <p className="text-muted small">
+            ICP Scores answers:
+            <b> “How closely does this lead Sub-parameter match our best-fit customer?”</b>
+          </p>
+
+            
+
+          {/* ===================================================== */}
+{/* STEP 2: ICP Scoring Structure */}
+{/* ===================================================== */}
+<div className="card shadow-sm border-0 rounded-4 p-4 mb-4">
+
+  {/* Score Formula */}
+  
+    ICP Score = Firmographic (0–40) + Role (0–20) + Geography (0–10) +
+    Behavioral (0–20) + Intent Signals (0–10)
+  </div>
+
+  {/* ===================================================== */}
+  {/* SMALL TABLE GRID */}
+  {/* ===================================================== */}
+  <div className="row g-3">
+
+    {/* Industry Fit */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Industry Fit (0–15)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Condition</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Core ICP</td><td>15</td></tr>
+            <tr><td>Adjacent</td><td>10</td></tr>
+            <tr><td>Acceptable</td><td>5</td></tr>
+            <tr><td>Not Target</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Company Size */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Company Size (0–15)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Range</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>ICP Sweet Spot</td><td>15</td></tr>
+            <tr><td>Near ICP</td><td>10</td></tr>
+            <tr><td>Edge</td><td>5</td></tr>
+            <tr><td>Outside</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Revenue Fit */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Revenue Fit (0–10)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Band</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Exact ICP</td><td>10</td></tr>
+            <tr><td>Close</td><td>7</td></tr>
+            <tr><td>Acceptable</td><td>4</td></tr>
+            <tr><td>Outside</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Job Function */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Job Function (0–10)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Function</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Buying</td><td>10</td></tr>
+            <tr><td>Influencer</td><td>7</td></tr>
+            <tr><td>Peripheral</td><td>3</td></tr>
+            <tr><td>Irrelevant</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Job Level */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Job Level (0–10)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Level</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Decision Maker</td><td>10</td></tr>
+            <tr><td>Manager</td><td>7</td></tr>
+            <tr><td>Contributor</td><td>4</td></tr>
+            <tr><td>Junior</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Geography */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Geography Fit (0–10)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Region</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Core Region</td><td>10</td></tr>
+            <tr><td>Secondary</td><td>6</td></tr>
+            <tr><td>Allowed</td><td>3</td></tr>
+            <tr><td>Excluded</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Behavioral Fit */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Behavioral Fit (0–20)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Engagement</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>High</td><td>20</td></tr>
+            <tr><td>Medium</td><td>10</td></tr>
+            <tr><td>Low</td><td>5</td></tr>
+            <tr><td>None</td><td>0</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    {/* Intent Signals */}
+    <div className="col-md-4">
+      <div className="border rounded-3 p-2">
+        <h6 className="fw-bold text-center small mb-2">
+          Intent Signals (0–10)
+        </h6>
+
+        <table className="table table-sm table-bordered text-center mb-0 small">
+          <thead className="table-light">
+            <tr>
+              <th>Signal</th>
+              <th>Score</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr><td>Product Interest</td><td>4</td></tr>
+            <tr><td>Competitor Mention</td><td>2</td></tr>
+            <tr><td>Repeated Visit</td><td>2</td></tr>
+            <tr><td>Urgency</td><td>2</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+          
         </div>
+
+        
 
         {/* ===================================================== */}
         {/* STEP 3: BACKEND BREAKDOWN TABLE */}
@@ -554,7 +785,7 @@ export default function ICPLeadAnalysis() {
         {/* ===================================================== */}
         {/* STEP 4: ICP INTERPRETATION */}
         {/* ===================================================== */}
-        <div className="card shadow-sm border-0 rounded-4 p-4">
+        {/* <div className="card shadow-sm border-0 rounded-4 p-4">
           <h5 className="fw-bold mb-3">ICP Score Interpretation</h5>
 
           <table className="table table-bordered text-center">
@@ -588,7 +819,7 @@ export default function ICPLeadAnalysis() {
               </tr>
             </tbody>
           </table>
-        </div>
+        </div> */}
       </div>
     </div>
   );

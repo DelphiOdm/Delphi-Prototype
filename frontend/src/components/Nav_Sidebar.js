@@ -13,7 +13,8 @@ export default function GlassNavigation() {
         { label: "Dashboard", icon: "bi-grid-1x2", path: "/SuperManagerDashboard" },
         { label: "Propensity Scoring", icon: "bi-graph-up-arrow", path: "/leadscoring" },
         // { label: "Create ICP", icon: "bi-person-badge", path: "/ICP/GenerateICP" },
-         { label: "ICP", icon: "bi-person-badge", path: "/ICP/CreateIdealTAL" },
+         { label: "ICP", icon: "bi-dice-6", path: "/ICP/CreateIdealTAL" },
+         { label: "Persona", icon: "bi-person-badge", path: "" },
      
         
         // ... add the rest of your 10 tabs here

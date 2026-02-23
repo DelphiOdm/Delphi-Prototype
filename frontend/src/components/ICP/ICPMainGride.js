@@ -117,7 +117,7 @@
 import React, { useEffect, useState } from "react";
 import axios from "axios";
 import ICPLeadsTable from "./ICPLeadsTable";
-import { getICPQuadrant } from "./icpQuadrant";   // ✅ ADD THIS
+import { getICPQuadrant } from "./icpQuadrant";   
 
 const API_BASE = (process.env.REACT_APP_API_DOMAIN || "http://localhost:8000")
   .replace(/\/$/, "");

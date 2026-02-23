@@ -21,7 +21,7 @@ export default function PromptBox({ onSend }) {
 
   return (
     <div className="chatgpt-prompt-wrapper">
-      <div className="chatgpt-prompt-box">
+      <div className="chatgpt-prompt-box border-warning">
         {/* Input */}
         <textarea
           rows="1"

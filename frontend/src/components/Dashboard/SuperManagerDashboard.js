@@ -135,11 +135,11 @@ export default function SuperManagerDashboard() {
           </div>
         </div>
 
-        <div className="col-12">
+        <div className="col-12 rounded-4">
           <div className="card border-0 shadow-sm rounded-4">
             <div className="card-header bg-white border-0 pt-4 px-4 d-flex justify-content-between align-items-center">
               <div>
-                <h5 className="fw-bold text-dark mb-0">Top Performing Leads</h5>
+                <h5 className="fw-bold text-dark mb-0">Propensity Score Overview</h5>
                 <span className="text-muted small">Propensity scores for {year} leads</span>
               </div>
 
@@ -224,9 +224,11 @@ export default function SuperManagerDashboard() {
               )}
 
             </div>
+
+            
           </div>
         </div>
-
+              
       </div>
     </div>
   );

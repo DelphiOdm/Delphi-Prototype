@@ -706,24 +706,25 @@ export default function CreateIdealTAL() {
       {error && <div className="alert alert-danger">{error}</div>}
 
       {/* Industry Selection Block */}
-      <div className="row justify-content-center">
+      <div className="row justify-content-center ">
         <div className="col-10 pt-4">
           <div
             className={`card border-0 shadow-sm rounded-4 ${
               showResults ? "p-2" : "p-4"
             }`}
           >
-            <div className="card-body">
-              <h6 className="fw-bold text-warning mb-3">
+            <div className="card-body p-4 border-start border-warning border-4 rounded-4">
+              <h6 className="fw-bold text-warning mb-3 ">
                 Industry And Brand Selection
               </h6>
 
               {/* Dropdown Row */}
-              <div className="row g-3">
+              <div className="d-flex justify-content-between align-items-center mt-3">
                 {/* Industry */}
                 <div className="col-md-3">
+                  <div><p>Select Industry</p></div>
                   <select
-                    className="form-select form-select-sm"
+                    className="form-select form-select-sm rounded-4"
                     value={filters.industries}
                     onChange={(e) =>
                       updateFilter("industries", e.target.value)
@@ -740,8 +741,9 @@ export default function CreateIdealTAL() {
 
                 {/* Brand */}
                 <div className="col-md-3">
+                  <div><p>Select Brand</p></div>
                   <select
-                    className="form-select form-select-sm"
+                    className="form-select form-select-sm rounded-4"
                     value={filters.brand}
                     disabled={!filters.industries}
                     onChange={(e) => updateFilter("brand", e.target.value)}
@@ -761,9 +763,10 @@ export default function CreateIdealTAL() {
                 </div>
 
                 {/* Country */}
-                <div className="col-md-3">
+                <div className="col-md-3 ">
+                  <div><p>Select Country</p></div>
                   <select
-                    className="form-select form-select-sm"
+                    className="form-select form-select-sm rounded-4"
                     value={filters.countries}
                     onChange={(e) =>
                       updateFilter("countries", e.target.value)
@@ -777,25 +780,15 @@ export default function CreateIdealTAL() {
                     ))}
                   </select>
                 </div>
-
-                {/* Clear */}
-                <div className="col-md-3">
-                  <button
-                    className="btn btn-outline-danger btn-sm w-100"
-                    onClick={clearFilters}
-                  >
-                    Reset
-                  </button>
-                </div>
               </div>
 
               {/* Prompt */}
               <div className="mt-4">
                 <PromptBox onSend={handleCreateICP} />
               </div>
-
+                    
               {/* Snapshot Button */}
-              <div className="mt-3">
+              <div className="d-flex justify-content-between align-items-center mt-3">
                 <button
                   className="btn btn-primary fw-bold px-4"
                   onClick={handleCreateICP}
@@ -809,7 +802,19 @@ export default function CreateIdealTAL() {
                     "ICP Snapshot"
                   )}
                 </button>
-              </div>
+              {/* </div> */}
+
+              {/* Clear */}
+                {/* <div className="col-md-6 mt-3 "> */}
+                  <button
+                    className="btn btn-outline-danger btn-sm px-5"
+                    onClick={clearFilters}
+                  >
+                    Reset
+                  </button>
+                </div>
+
+              
 
               {/* Snapshot Display */}
               {snapshot.length > 0 && (
@@ -819,10 +824,12 @@ export default function CreateIdealTAL() {
                   <div className="row">
                     {snapshot.map((s, idx) => (
                       <div key={idx} className="col-md-4 mt-3">
-                        <div className="card shadow-sm rounded-4 p-3">
+                        <div className="card shadow-sm rounded-4 p-3 border-warning">
                           <h6 className="text-muted">{s.parameter}</h6>
                           <h5 className="fw-bold">{s.ideal_value}</h5>
                           <small>Frequency: {s.frequency}</small>
+                          <small>Total: {s.total_leads}</small>
+                          <small>Percentage: {s.percentage}</small>
                         </div>
                       </div>
                     ))}
@@ -842,7 +849,7 @@ export default function CreateIdealTAL() {
             </div>
           </div>
 
-          {/* ✅ Embedded GenerateICP Table Below Snapshot */}
+          {/* Embedded GenerateICP Table Below Snapshot */}
           {showResults && (
             <div className="mt-5">
               <GenerateICP embeddedQuery={generatedQuery} />

@@ -186,7 +186,7 @@ export default function GenerateICP({ embeddedQuery }) {
   const [filters, setFilters] = useState({});
   const [refreshKey, setRefreshKey] = useState(0);
 
-  // ✅ Load Filters from Parent Query
+  // Load Filters from Parent Query
   useEffect(() => {
     if (!embeddedQuery) return;
 
@@ -210,7 +210,7 @@ export default function GenerateICP({ embeddedQuery }) {
   }, [embeddedQuery]);
 
   return (
-    <div className="card shadow-sm border-0 rounded-4 p-4">
+    <div className="card shadow-sm border-0 rounded-4 p-4 ">
       <h4 className="fw-bold mb-3">ICP Leads Result</h4>
 
       <ICPMainGride
