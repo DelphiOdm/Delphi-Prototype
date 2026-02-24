@@ -1,6 +1,7 @@
 // frontend/src/components/ICP/ICPLeadsTable.js
 import React from "react";
 import { getICPQuadrant } from "./icpQuadrant";
+import { ClipLoader } from "react-spinners";
 
 export default function ICPLeadsTable({
   leads,
@@ -14,16 +15,36 @@ export default function ICPLeadsTable({
   
 
   // Loading UI
+  // if (loading) {
+  //   return (
+  //     <div className="text-center py-5">
+  //       <div className="spinner-border text-primary" role="status"></div>
+  //       <div className="mt-2 text-muted small">
+  //         Calculating ICP Scores...
+          
+  //       </div>
+  //     </div>
+  //   );
+  // }
   if (loading) {
-    return (
-      <div className="text-center py-5">
-        <div className="spinner-border text-primary" role="status"></div>
-        <div className="mt-2 text-muted small">
-          Calculating ICP Scores...
+  return (
+    <div className="icp-table-loader-wrapper">
+      <div className="text-center">
+        <div className="icp-diamond-loader">
+          <div className="icp-diamond one"></div>
+          <div className="icp-diamond two"></div>
+          <div className="icp-diamond three"></div>
+          <div className="icp-diamond four"></div>
+        </div>
+
+        <div className="icp-loading-text mt-4 text-success">
+           
+                       Calculating <ClipLoader size={15} />
         </div>
       </div>
-    );
-  }
+    </div>
+  );
+}
 
   // Empty UI
   if (!leads.length) {

@@ -3,6 +3,7 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import MonthlyLeadsBarChart from "./MonthlyLeadsBarChart";
 import '../../styles/common.css';
+import { ClipLoader } from "react-spinners";
 
 const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
@@ -80,19 +81,6 @@ export default function SuperManagerDashboard() {
       <div className="d-flex flex-column flex-md-row justify-content-between align-items-md-center mb-4 gap-3 ">
         <div>
           <h3 className="fw-bold text-dark mb-1 title-style">Dashboard Overview</h3>
-          {/* <style>{`
-        .dashboard-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            font-size: 1.2rem;
-            letter-spacing: 3px;
-            background: linear-gradient(90deg, #212529 0%, #0d6efd 100%);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-    `}</style> */}
           <p className="text-secondary mb-0">Track performance metrics and lead propensity.</p>
         </div>
 
@@ -120,11 +108,12 @@ export default function SuperManagerDashboard() {
               <span className="text-muted small">Comparison of leads generated in {year}</span>
             </div>
             <div className="card-body px-4 pb-4">
-              {loading ? (
+              {/* {loading ? (
                 <div className="d-flex justify-content-center align-items-center" style={{ height: "300px" }}>
                   <div className="spinner-border text-primary" role="status"></div>
                 </div>
-              ) : monthlyStats.length === 0 ? (
+              ) : monthlyStats.length === 0 ? ( */}
+             {monthlyStats.length === 0 ? (
                 <div className="text-center text-muted py-5 my-5">
                   No data available for this year
                 </div>
@@ -159,6 +148,21 @@ export default function SuperManagerDashboard() {
 
             <div className="card-body p-0 mt-3">
               <div className="table-responsive">
+                {loading && (
+              <div className="icp-loading-overlay">
+                <div className="text-center">
+                  <div className="icp-diamond-loader">
+                    <div className="icp-diamond one"></div>
+                    <div className="icp-diamond two"></div>
+                    <div className="icp-diamond three"></div>
+                    <div className="icp-diamond four"></div>
+                  </div>
+                   <div className="icp-loading-text text-success ">
+                     Generating <ClipLoader size={15} />
+                    </div>
+                  </div>
+                </div>
+              )}
                 <table className="table table-hover align-middle mb-0" style={{ minWidth: "800px" }}>
                   <thead className="bg-light text-secondary small text-uppercase fw-bold">
                     <tr>

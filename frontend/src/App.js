@@ -18,6 +18,7 @@ import ICPScoringConfigList from "./components/ICP/ScoringConfig/ICPScoringConfi
 import GenerateICP from "./components/ICP/GenerateICP";
 import CreateIdealTAL from "./components/ICP/CreateIdealTAL";
 import ICPLeadAnalysis from "./components/ICP/ICPLeadAnalysis";
+import CreatePersona from "./components/Persona/CreatePersona";
 
 import Nav_Sidebar from "./components/Nav_Sidebar";
 function App() {
@@ -107,6 +108,16 @@ function App() {
               </ProtectedRoute>
             }
           />
+
+
+          <Route
+          path="/Persona/CreatePersona"
+          element={
+            <ProtectedRoute>
+              <CreatePersona />
+            </ProtectedRoute>
+          }
+        />
 
 
 

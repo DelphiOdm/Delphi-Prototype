@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ClipLoader } from "react-spinners";
 
 export default function TopLeadsTable({ leads = [], loading, pageSize }) {
   const navigate = useNavigate();
@@ -13,8 +14,25 @@ export default function TopLeadsTable({ leads = [], loading, pageSize }) {
   if (loading) {
     return (
       <div className="text-center py-5">
-        <div className="spinner-border text-primary" role="status"></div>
-        <div className="mt-2 text-muted small">Calculating Propensity Scores...</div>
+        {/* <div className="spinner-border text-primary" role="status"></div> */}
+        {/* <div className="mt-2 text-muted small">Calculating Propensity Scores...</div> */}
+        {loading && (
+        <div className="icp-loading-overlay">
+          <div className="text-center">
+            <div className="icp-diamond-loader">
+              <div className="icp-diamond one"></div>
+              <div className="icp-diamond two"></div>
+              <div className="icp-diamond three"></div>
+              <div className="icp-diamond four"></div>
+            </div>
+
+            <div className="icp-loading-text text-success mt-4">
+              Calculating  <ClipLoader size={15} />
+                    
+            </div>
+          </div>
+        </div>
+      )}
       </div>
     );
   }
@@ -54,7 +72,6 @@ export default function TopLeadsTable({ leads = [], loading, pageSize }) {
 
     return pages;
   };
-
   return (
     <div className="card border-0 shadow-sm rounded-4 overflow-hidden bg-white mt-3">
       <div className="table-responsive">

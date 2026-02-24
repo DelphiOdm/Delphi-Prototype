@@ -14,10 +14,10 @@ export default function GlassNavigation() {
         { label: "Propensity Scoring", icon: "bi-graph-up-arrow", path: "/leadscoring" },
         // { label: "Create ICP", icon: "bi-person-badge", path: "/ICP/GenerateICP" },
          { label: "ICP", icon: "bi-dice-6", path: "/ICP/CreateIdealTAL" },
-         { label: "Persona", icon: "bi-person-badge", path: "" },
+         { label: "CreatePersona", icon: "bi-person-badge", path: "/Persona/CreatePersona" },
      
         
-        // ... add the rest of your 10 tabs here
+       
     ];
 
     return (

@@ -39,7 +39,8 @@ def get_job_titles(q: str = Query(None, description="Search substring (case-inse
                   AND Job_title IS NOT NULL
                   AND TRIM(Job_title) <> ''
                   AND LOWER(Job_title) LIKE LOWER(%s)
-                ORDER BY label
+                  AND TRIM(Job_title) REGEXP '^[A-Za-z0-9 ]+$'
+                ORDER BY label ASC
                 LIMIT %s
             """
             params = (f"%{q}%", limit)
@@ -50,6 +51,7 @@ def get_job_titles(q: str = Query(None, description="Search substring (case-inse
                 WHERE Isdelete = b'0'
                   AND Job_title IS NOT NULL
                   AND TRIM(Job_title) <> ''
+                  AND TRIM(Job_title) REGEXP '^[A-Za-z]+$'
                 ORDER BY label
                 LIMIT %s
             """

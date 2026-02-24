@@ -10,3 +10,122 @@
     position: relative;
     transition: all 0.3s ease;
 }
+
+
+
+/* ===============================
+   PREMIUM AI Diamond Loader
+================================= */
+
+.icp-loading-overlay {
+  position: fixed;
+  inset: 0;
+  /* background: linear-gradient(
+    135deg,
+    rgba(255,255,255,0.9),
+    rgba(240,245,255,0.9)
+  ); */
+  backdrop-filter: blur(6px);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 9999;
+  animation: fadeInOverlay 0.4s ease-in-out;
+}
+
+/* Fade In */
+@keyframes fadeInOverlay {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.icp-diamond-loader {
+  width: 90px;
+  height: 90px;
+  position: relative;
+  animation: rotateDiamond 4s infinite linear;
+  transform-style: preserve-3d;
+}
+
+/* Slow smooth rotation */
+@keyframes rotateDiamond {
+  0%   { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.icp-diamond {
+  width: 36px;
+  height: 36px;
+  position: absolute;
+  transform: rotate(45deg);
+  border-radius: 8px;
+  box-shadow: 0 0 15px rgba(0, 123, 255, 0.4);
+  animation: pulseCube 1.8s infinite ease-in-out;
+}
+
+/* Pulse animation */
+@keyframes pulseCube {
+  0%, 100% {
+    transform: rotate(45deg) scale(1);
+    opacity: 0.8;
+  }
+  50% {
+    transform: rotate(45deg) scale(1.2);
+    opacity: 1;
+  }
+}
+
+/* Positions */
+.icp-diamond.one {
+  background: linear-gradient(135deg, #6dd5fa, #2980b9);
+  top: 0;
+  left: 27px;
+  animation-delay: 0s;
+}
+
+.icp-diamond.two {
+  background: linear-gradient(135deg, #4e73df, #1cc88a);
+  right: 0;
+  top: 27px;
+  animation-delay: 0.2s;
+}
+
+.icp-diamond.three {
+  background: linear-gradient(135deg, #6dd5fa, #2980b9);
+  bottom: 0;
+  left: 27px;
+  animation-delay: 0.4s;
+}
+
+.icp-diamond.four {
+  background: linear-gradient(135deg, #4e73df, #1cc88a);
+  left: 0;
+  top: 27px;
+  animation-delay: 0.6s;
+}
+
+/* Text */
+.icp-loading-text {
+  margin-top: 35px;
+  font-weight: 600;
+  font-size: 20px;
+  color: #2c3e50;
+  letter-spacing: 1px;
+  animation: textFade 2s infinite ease-in-out;
+}
+
+@keyframes textFade {
+  0%, 100% { opacity: 0.5; }
+  50% { opacity: 1; }
+}
+
+/* ===============================
+   Table Loader Centering
+================================= */
+
+.icp-table-loader-wrapper {
+  min-height: 400px; /* height of table area */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}

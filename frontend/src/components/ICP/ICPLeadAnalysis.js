@@ -6,6 +6,7 @@ import { getICPQuadrant } from "./icpQuadrant";
 import ICPQuadrantChart from "./ICPQuadrantChart";
 import ScoreBreakdownTable from "./ScoreBreakdownTable";
 import "../../styles/common.css";
+import { ClipLoader } from "react-spinners";
 
 const API_BASE = (process.env.REACT_APP_API_DOMAIN || "http://localhost:8000")
   .replace(/\/$/, "");
@@ -849,7 +850,22 @@ export default function ICPLeadAnalysis() {
 
 
   if (loading) {
-    return <div className="p-5 text-center">Loading ICP Analysis...</div>;
+    return <div className="p-5 text-center">{loading && (
+  <div className="icp-loading-overlay">
+    <div className="text-center">
+      <div className="icp-diamond-loader">
+        <div className="icp-diamond one"></div>
+        <div className="icp-diamond two"></div>
+        <div className="icp-diamond three"></div>
+        <div className="icp-diamond four"></div>
+      </div>
+
+      <div className="icp-loading-text text-center text-success">
+        ICP Analysis <ClipLoader size={15}/>
+      </div>
+    </div>
+  </div>
+)}</div>;
   }
 
   if (!analysis) {

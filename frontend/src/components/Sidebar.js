@@ -142,6 +142,20 @@ export default function Sidebar({ isOpen, toggleSidebar }) {
                                 <p className="mb-0 text-muted text-truncate" style={{ fontSize: '10px' }}>Adjust ICP weights & scores</p>
                             </div>
                         </button>
+
+                        <button
+                            onClick={() => { navigate(""); toggleSidebar(); }}
+                            className="list-group-item list-group-item-action border rounded-3 d-flex align-items-center gap-3 py-3"
+                            style={{ transition: 'all 0.2s ease' }}
+                        >
+                            <div className="bg-primary bg-opacity-10 p-2 rounded-circle d-flex align-items-center justify-content-center" style={{ width: '35px', height: '35px' }}>
+                                <i className="bi bi-sliders text-primary"></i>
+                            </div>
+                            <div className="overflow-hidden">
+                                <p className="mb-0 fw-bold text-dark" style={{ fontSize: '12px' }}>Persona Configuration</p>
+                                <p className="mb-0 text-muted text-truncate" style={{ fontSize: '10px' }}>Adjust Persona weights & scores</p>
+                            </div>
+                        </button>
                         
                         {/* Sign Out Item */}
                         <button

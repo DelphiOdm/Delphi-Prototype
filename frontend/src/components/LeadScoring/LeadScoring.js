@@ -406,6 +406,7 @@ useEffect(() => {
           <TopLeadsTable leads={results} loading={loading} pageSize={pageSize} />
         </div>
       </div>
+      
     </div>
   );
 }
