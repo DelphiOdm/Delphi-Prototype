@@ -37,10 +37,10 @@ export default function ICPLeadsTable({
           <div className="icp-diamond four"></div>
         </div>
 
-        <div className="icp-loading-text mt-4 text-success">
+        {/* <div className="icp-loading-text mt-4 text-success">
            
                        Calculating <ClipLoader size={15} />
-        </div>
+        </div> */}
       </div>
     </div>
   );

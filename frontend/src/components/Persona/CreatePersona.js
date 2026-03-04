@@ -273,17 +273,17 @@ const fetchCallStatuses = async () => {
             </select>
           </div>
 
-          {/* Department */}
+          {/* Job function */}
           <div>
             <label className="block text-sm font-medium text-gray-600 mb-2">
-              Department
+              Job Function
             </label>
             <select
               className="w-full rounded-xl border-gray-300 focus:ring-2 focus:ring-red-400 focus:border-red-400 shadow-sm"
               value={filters.job_function}
               onChange={(e) => updateFilter("job_function", e.target.value)}
             >
-              <option value="">Select Department</option>
+              <option value="">Select Job Function</option>
               {jobFunctions.map(j => (
                 <option key={j.id} value={j.id}>{j.label}</option>
               ))}

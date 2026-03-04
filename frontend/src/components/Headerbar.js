@@ -10,7 +10,7 @@ export default function GlassNavigation() {
     if (location.pathname === "/" || location.pathname === "/login") return null;
     // Dynamic tabs - you can easily add all 10 here
     const tabs = [
-        { label: "Dashboard", icon: "bi-grid-1x2", path: "/SuperManagerDashboard" },
+        { label: "Dashboard", icon: "bi-grid-1x2", path: "/Dashboard" },
         { label: "Propensity Scoring", icon: "bi-graph-up-arrow", path: "/leadscoring" },
         // { label: "Create ICP", icon: "bi-person-badge", path: "/ICP/GenerateICP" },
          { label: "ICP", icon: "bi-dice-6", path: "/ICP/CreateIdealTAL" },

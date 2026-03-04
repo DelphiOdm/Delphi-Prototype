@@ -54,16 +54,16 @@ def get_icp_leads(
 
         results = list(cursor.stored_results())
 
-        # ✅ Result Set 1 → total count
+        #  Result Set 1 → total count
         total = results[0].fetchone()["total"]
 
-        # ✅ Result Set 2 → paginated leads
+        # Result Set 2 → paginated leads
         leads = results[1].fetchall()
 
         return {
             "page": page,
             "page_size": page_size,
-            "total": total,          # ✅ Required for pagination
+            "total": total,          #  Required for pagination
             "leads": leads
         }
 

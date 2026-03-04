@@ -34,7 +34,8 @@ function Login() {
             localStorage.setItem("user", JSON.stringify(staticUser));
             localStorage.setItem("roleName", "super_admin");
 
-            navigate("/SuperManagerDashboard"); // Redirect to correct dashboard
+            
+            navigate("/Dashboard"); // Redirect to correct dashboard
             return;
         }
 
@@ -148,14 +149,22 @@ function Login() {
                     </button>
                 </form>
 
-                {/* <div className="text-center mt-3">
-                    <a
+                <div className="text-center mt-3">
+                    <div className="mt-3"> <a
                         href="#"
                         className="text-decoration-none small text-primary"
                     >
                         Forgot Password?
-                    </a>
-                </div> */}
+                    </a></div>
+                   <div className=" mt-3"> 
+                    <button
+                        onClick={() => navigate("/Onboarding")}
+                        className="text-decoration-none small text-primary"
+                    >
+                        Register
+                    </button>
+                    </div>
+                </div>
             </div>
         </div>
     );

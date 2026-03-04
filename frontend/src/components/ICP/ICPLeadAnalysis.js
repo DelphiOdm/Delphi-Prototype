@@ -8,6 +8,7 @@ import ScoreBreakdownTable from "./ScoreBreakdownTable";
 import "../../styles/common.css";
 import { ClipLoader } from "react-spinners";
 
+
 const API_BASE = (process.env.REACT_APP_API_DOMAIN || "http://localhost:8000")
   .replace(/\/$/, "");
 
@@ -861,7 +862,7 @@ export default function ICPLeadAnalysis() {
       </div>
 
       <div className="icp-loading-text text-center text-success">
-        ICP Analysis <ClipLoader size={15}/>
+        Generating<ClipLoader size={15}/>
       </div>
     </div>
   </div>

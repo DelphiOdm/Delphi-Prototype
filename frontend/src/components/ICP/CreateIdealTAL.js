@@ -374,9 +374,9 @@ export default function CreateIdealTAL() {
         <div className="icp-diamond three"></div>
         <div className="icp-diamond four"></div>
       </div>
-      <div className="icp-loading-text text-center text-success mt-3">
+      {/* <div className="icp-loading-text text-center text-success mt-3">
         Generating <ClipLoader size={15} /> 
-      </div>
+      </div> */}
     </div>
   </div>
 )}

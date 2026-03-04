@@ -108,7 +108,7 @@
 import React, { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
-import Nav_Sidebar from "./Nav_Sidebar"; // Your updated dock
+import Nav_Sidebar from "./Headerbar"; // Your updated dock
 
 export default function Header() {
     const navigate = useNavigate();

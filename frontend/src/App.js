@@ -1,11 +1,15 @@
-// frontend/src/App.js
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// // frontend/src/App.js
+import { BrowserRouter as Router, Routes, Route, useLocation } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import Login from "./components/Login";
+import Onboarding from "./components/Onboarding/Onboarding";
+import Enrichment from "./components/Onboarding/Enrichment";
 import ProtectedRoute from "./components/ProtectedRoute";
-import SuperManagerDashboard from "./components/Dashboard/SuperManagerDashboard";
+
+import Dashboard from "./components/Dashboard/Dashboard";
+
 import CampaignDetails from "./components/CampaignDetails";
 import CompanyDetails from "./components/CompanyDetails";
 import Header from "./components/Header";
@@ -19,32 +23,44 @@ import GenerateICP from "./components/ICP/GenerateICP";
 import CreateIdealTAL from "./components/ICP/CreateIdealTAL";
 import ICPLeadAnalysis from "./components/ICP/ICPLeadAnalysis";
 import CreatePersona from "./components/Persona/CreatePersona";
+import PersonaScoringConfig from "./components/Persona/ScoringConfig/PersonaScoringConfig";
+import PersonaScoringConfigList from "./components/Persona/ScoringConfig/PersonaScoringConfigList";
+import Nav_Sidebar from "./components/Headerbar";
 
-import Nav_Sidebar from "./components/Nav_Sidebar";
-function App() {
+function Layout() {
+  const location = useLocation();
+
+  // Pages where header/sidebar should NOT show
+  const hideLayoutRoutes = ["/", "/Onboarding", "/Enrichment"];
+
+
+  const shouldHideLayout = hideLayoutRoutes.includes(location.pathname);
+
   return (
-    <Router>
+    <>
       <ToastContainer position="top-right" autoClose={3000} />
-      <Nav_Sidebar />
-      <Header />
+
+      {!shouldHideLayout && <Nav_Sidebar />}
+      {!shouldHideLayout && <Header />}
+
       <div className="d-flex">
         <div className="flex-grow-1">
           <Routes>
-            
-            {/* ================= PUBLIC ================= */}
-            <Route path="/" element={<Login />} />
 
-            {/* ================= PROTECTED ================= */}
-                        
+            {/* PUBLIC */}
+            <Route path="/" element={<Login />} />
+            <Route path="/Onboarding" element={<Onboarding />} />
+            <Route path="/Enrichment" element={<Enrichment />} />
+
+            {/* PROTECTED */}
             <Route
-              path="/SuperManagerDashboard"
+              path="/Dashboard"
               element={
                 <ProtectedRoute>
-                  <SuperManagerDashboard />
+                  <Dashboard />
                 </ProtectedRoute>
               }
             />
-
 
             <Route
               path="/LeadScoring"
@@ -55,74 +71,87 @@ function App() {
               }
             />
 
-                    <Route
-          path="/ScoreConfiguration"
-          element={
-            <ProtectedRoute>
-              <ScoreConfiguration />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/ScoreConfiguration"
+              element={
+                <ProtectedRoute>
+                  <ScoreConfiguration />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/ScoreConfiguration/values/:parameterId"
-          element={
-            <ProtectedRoute>
-              <ScoreValuesConfig />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/ScoreConfiguration/values/:parameterId"
+              element={
+                <ProtectedRoute>
+                  <ScoreValuesConfig />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/ICP/GenerateICP"
-          element={
-            <ProtectedRoute>
-              <GenerateICP />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/ICP/GenerateICP"
+              element={
+                <ProtectedRoute>
+                  <GenerateICP />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-        path="/ICP/CreateIdealTAL"
-        element={
-          <ProtectedRoute>
-            <CreateIdealTAL/>
-          </ProtectedRoute>
-        }
-        />
+            <Route
+              path="/ICP/CreateIdealTAL"
+              element={
+                <ProtectedRoute>
+                  <CreateIdealTAL />
+                </ProtectedRoute>
+              }
+            />
 
-        <Route
-          path="/ICP"
-          element={
-            <ProtectedRoute>
-              <ICPScoringConfigList />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/ICP"
+              element={
+                <ProtectedRoute>
+                  <ICPScoringConfigList />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-            path="/ICP/values/:parameterId"
-            element={
-              <ProtectedRoute>
-                <ICPScoringConfig />
-              </ProtectedRoute>
-            }
-          />
+            <Route
+              path="/ICP/values/:parameterId"
+              element={
+                <ProtectedRoute>
+                  <ICPScoringConfig />
+                </ProtectedRoute>
+              }
+            />
 
+            <Route
+              path="/Persona/CreatePersona"
+              element={
+                <ProtectedRoute>
+                  <CreatePersona />
+                </ProtectedRoute>
+              }
+            />
 
-          <Route
-          path="/Persona/CreatePersona"
-          element={
-            <ProtectedRoute>
-              <CreatePersona />
-            </ProtectedRoute>
-          }
-        />
+            <Route
+              path="/Persona"
+              element={
+                <ProtectedRoute>
+                  <PersonaScoringConfig/>
+                </ProtectedRoute>
+              }
+            />
 
+            <Route
+              path="/Persona/values/:parameterId"
+              element={
+                <ProtectedRoute>
+                  <PersonaScoringConfig />
+                </ProtectedRoute>
+              }
+            />
 
-
-
-            {/* ===== Campaign flow ===== */}
             <Route
               path="/campaigns/:campaignId"
               element={
@@ -141,7 +170,6 @@ function App() {
               }
             />
 
-            {/* ===== Lead Detail (NEW) ===== */}
             <Route
               path="/leads/:leadId"
               element={
@@ -152,20 +180,27 @@ function App() {
             />
 
             <Route
-             path="/icp/leads/:leadId"
+              path="/icp/leads/:leadId"
               element={
                 <ProtectedRoute>
                   <ICPLeadAnalysis />
                 </ProtectedRoute>
-              
-              } />
+              }
+            />
 
-
-            {/* ================= FALLBACK ================= */}
+            {/* FALLBACK */}
             <Route path="*" element={<Login />} />
           </Routes>
         </div>
       </div>
+    </>
+  );
+}
+
+function App() {
+  return (
+    <Router>
+      <Layout />
     </Router>
   );
 }

@@ -31,8 +31,9 @@ def get_brands(industry_id: int = Query(...)):
             JOIN Mst_tblclient_brands b
                 ON b.Client_id = cc.Client_id
             WHERE lm.Standard_industry_id = %s
+              AND b.Brand_name REGEXP '^[A-Za-z]'
               AND b.Isactive = b'1'
-            ORDER BY b.Brand_name;
+            ORDER BY b.Brand_name ASC;
         """, (industry_id,))
 
         rows = cur.fetchall() or []
