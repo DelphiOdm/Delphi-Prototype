@@ -72,7 +72,7 @@ export default function ICPScoringConfigList() {
               <tr>
                 <th className="ps-4">Parameter</th>
                 <th className="text-center">Weight</th>
-                <th className="text-end pe-4">Values</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>

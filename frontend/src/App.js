@@ -138,16 +138,16 @@ function Layout() {
               path="/Persona"
               element={
                 <ProtectedRoute>
-                  <PersonaScoringConfig/>
+                  <PersonaScoringConfigList/>
                 </ProtectedRoute>
               }
             />
 
             <Route
-              path="/Persona/values/:parameterId"
+              path="/persona/values/:parameterId"
               element={
                 <ProtectedRoute>
-                  <PersonaScoringConfig />
+                  <PersonaScoringConfig/>
                 </ProtectedRoute>
               }
             />

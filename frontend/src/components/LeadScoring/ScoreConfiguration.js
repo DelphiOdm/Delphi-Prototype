@@ -81,7 +81,7 @@ export default function ScoreConfiguration() {
               <tr>
                 <th className="ps-4">Parameter</th>
                 <th className="text-center">Weight </th>
-                <th className="text-end pe-4">Scores</th>
+                <th></th>
               </tr>
             </thead>
             <tbody>
