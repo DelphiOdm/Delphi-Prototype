@@ -460,7 +460,7 @@ def derive_combined_priority(icp_score: float, propensity_score: float, persona_
 
     tier = (persona_tier or "Tier 4").strip()
 
-    if icp_score >= 70 and propensity_score >= 80 and tier == "Tier 1":
+    if icp_score >= 50 and propensity_score >= 50 and tier == "Tier 1":
         return "Very High"
 
     if (icp_score >= 50 or propensity_score >= 60) and tier == "Tier 2":
