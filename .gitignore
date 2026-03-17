@@ -1,20 +1,29 @@
-# Python backend
-backend/__pycache__/
-backend/apis/__pycache__/
-backend/utils/__pycache__/
-backend/*.py[cod]
-backend/venv/
+cat > .gitignore << 'EOF'
+# Python - catch ALL __pycache__ anywhere
+__pycache__/
+**/__pycache__/
+*.py[cod]
+*.pyo
+*.pyc
+venv/
+.venv/
 backend/.env
 
-# Node.js frontend
+# Node.js
+node_modules/
 frontend/node_modules/
 frontend/.cache/
 frontend/.env
+frontend/package-lock.json
 
-# Editor / OS files
+# Build
+frontend/build/
+dist/
+
+# Editor / OS
 *.swp
 *~
 .DS_Store
 .vscode/
 .idea/
-node_modules
+EOF
