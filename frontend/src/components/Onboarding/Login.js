@@ -30,7 +30,7 @@ function Login() {
                 user_id:   0,
                 role_id:   0
             }));
-            navigate("/Dashboard");
+           navigate("/Dashboard", { replace: true });
             return;
         }
 
@@ -46,10 +46,10 @@ function Login() {
 
             switch (user.role_name) {
                 case "Admin":
-                    navigate("/Dashboard");
+                    navigate("/Dashboard", { replace: true });
                     break;
                 default:
-                    navigate("/Dashboard");
+                   navigate("/Dashboard", { replace: true });
             }
 
         } catch (err) {
