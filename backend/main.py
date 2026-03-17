@@ -12,7 +12,7 @@ from apis.ICP                     import router as icp_router
 from apis.ICP.ScoreConfig         import router as icp_score_router
 from apis.Persona.ScoreConfig     import router as persona_router
 from apis.Persona.GeneratePersona import router as generate_persona_router
-
+from apis.Authentication import router as auth_router
 load_dotenv()
 app = FastAPI()
 
@@ -31,7 +31,7 @@ app.include_router(icp_router,              prefix="/leadscores/scoring")
 app.include_router(icp_score_router,        prefix="/leadscores/icp/scoring")
 app.include_router(persona_router,          prefix="/leadscores/persona")
 app.include_router(generate_persona_router, prefix="/leadscores/persona")   
-
+app.include_router(auth_router)
 @app.get("/health")
 def health():
     return {"status": "ok"}
