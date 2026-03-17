@@ -1,21 +1,21 @@
 import { useState } from "react";
 import axios from "axios";
-import { useNavigate, useLocation } from "react-router-dom";
-// import { API_BASE_URL } from '../config';
+import { useNavigate } from "react-router-dom";
+
 const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
 
 function Login() {
-    const [email, setEmail] = useState("");
+    const [email,    setEmail]    = useState("");
     const [password, setPassword] = useState("");
-    const [error, setError] = useState("");
+    const [error,    setError]    = useState("");
+    const [loading,  setLoading]  = useState(false);
+    const [showPass, setShowPass] = useState(false);
     const navigate = useNavigate();
-    const location = useLocation();
-    const from = location.state?.from?.pathname || "/"; // default to "/"
 
     const handleLogin = async (e) => {
         e.preventDefault();
+        setError("");
 
-        // Basic validation
         if (!email || !password) {
             setError("Email and password are required");
             return;
@@ -23,65 +23,45 @@ function Login() {
 
         // Static Super Admin Bypass
         if (email === "admin@xtsworld.in" && password === "xts@123") {
-            const staticUser = {
-                email: "superadmin@xdbs.in",
-                fullname: "Sameer Datta",
-                roleName: "super_admin",
-                id: 0,
-                role: 0
-            };
-
-            localStorage.setItem("user", JSON.stringify(staticUser));
-            localStorage.setItem("roleName", "super_admin");
-
-            
-            navigate("/Dashboard"); // Redirect to correct dashboard
+            localStorage.setItem("user", JSON.stringify({
+                email:     "superadmin@xdbs.in",
+                full_name: "Sameer Datta",
+                role_name: "super_admin",
+                user_id:   0,
+                role_id:   0
+            }));
+            navigate("/Dashboard");
             return;
         }
 
+        setLoading(true);
         try {
-            const res = await axios.post(`${API_BASE_URL}/login`, {
-                user_email: email,
-                user_password: password,
-            }, {
-                headers: { "Content-Type": "application/x-www-form-urlencoded" }
+            const res = await axios.post(`${API_BASE_URL}/auth/login`, {
+                email,
+                password
             });
 
             const user = res.data.user;
             localStorage.setItem("user", JSON.stringify(user));
 
-            const Prole_id = parseInt(user.role);
-            const getRole = async (Prole_id) => {
-                try {
-                    const roleRes = await axios.get(`${API_BASE_URL}/get_role`, {
-                        params: { prole_id: Prole_id }
-                    });
-                    return roleRes.data.role_name;
-                } catch (error) {
-                    console.error("Error fetching role:", error);
-                    return null;
-                }
-            };
-
-            const roleName = await getRole(Prole_id);
-            localStorage.setItem("roleName", roleName);
-
-            switch (roleName) {
-                case "Operation_Admin":
-                    navigate("/SuperAdmin");
-                    break;
-                case "Operations - Team Leader":
-                    navigate("/TeamLeadDashboard");
-                    break;
-                case "Operations - Associate":
-                    navigate("/AgentDashboard");
+            switch (user.role_name) {
+                case "Admin":
+                    navigate("/Dashboard");
                     break;
                 default:
-                    navigate("/dashboard");
+                    navigate("/Dashboard");
             }
+
         } catch (err) {
-            console.error("Login error:", err);
-            setError("Invalid email or password");
+            const msg = err.response?.data?.detail || "Invalid email or password";
+            // If email not verified redirect to OTP page
+            if (msg.includes("not verified")) {
+                navigate("/Otp", { state: { email } });
+            } else {
+                setError(msg);
+            }
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -99,9 +79,7 @@ function Login() {
                         <i className="bi bi-person-lock fs-3"></i>
                     </div>
                     <h3 className="mt-3 fw-bold">Welcome Back</h3>
-                    <p className="text-muted small">
-                        Sign in to continue to your dashboard
-                    </p>
+                    <p className="text-muted small">Sign in to continue to your dashboard</p>
                 </div>
 
                 {error && <div className="alert alert-danger py-2">{error}</div>}
@@ -116,7 +94,7 @@ function Login() {
                             <input
                                 type="email"
                                 className="form-control"
-                                placeholder="Enter email"
+                                placeholder="Enter your email"
                                 value={email}
                                 onChange={(e) => setEmail(e.target.value)}
                                 required
@@ -124,45 +102,58 @@ function Login() {
                         </div>
                     </div>
 
-                    <div className="mb-3">
+                    <div className="mb-4">
                         <label className="form-label fw-semibold">Password</label>
                         <div className="input-group">
                             <span className="input-group-text bg-light">
                                 <i className="bi bi-lock"></i>
                             </span>
                             <input
-                                type="password"
+                                type={showPass ? "text" : "password"}
                                 className="form-control"
-                                placeholder="Enter password"
+                                placeholder="Enter your password"
                                 value={password}
                                 onChange={(e) => setPassword(e.target.value)}
                                 required
                             />
+                            <button
+                                type="button"
+                                className="input-group-text bg-light border-start-0"
+                                onClick={() => setShowPass(!showPass)}
+                            >
+                                <i className={`bi ${showPass ? "bi-eye-slash" : "bi-eye"}`}></i>
+                            </button>
                         </div>
                     </div>
 
                     <button
                         type="submit"
                         className="btn btn-primary w-100 shadow-sm fw-semibold"
+                        disabled={loading}
                     >
-                        <i className="bi bi-box-arrow-in-right me-2"></i> Login
+                        {loading
+                            ? <span className="spinner-border spinner-border-sm me-2"></span>
+                            : <i className="bi bi-box-arrow-in-right me-2"></i>
+                        }
+                        {loading ? "Signing in..." : "Login"}
                     </button>
                 </form>
 
                 <div className="text-center mt-3">
-                    <div className="mt-3"> <a
-                        href="#"
-                        className="text-decoration-none small text-primary"
+                    <button
+                        className="btn btn-link text-decoration-none small text-primary p-0"
+                        onClick={() => navigate("/Forget")}
                     >
                         Forgot Password?
-                    </a></div>
-                   <div className=" mt-3"> 
-                    <button
-                        onClick={() => navigate("/Onboarding")}
-                        className="text-decoration-none small text-primary"
-                    >
-                        Register
                     </button>
+
+                    <div className="mt-2">
+                        <button
+                            className="btn btn-link text-decoration-none small text-primary p-0"
+                            onClick={() => navigate("/Onboarding")}
+                        >
+                            Don't have an account? Register
+                        </button>
                     </div>
                 </div>
             </div>
@@ -171,4 +162,3 @@ function Login() {
 }
 
 export default Login;
-

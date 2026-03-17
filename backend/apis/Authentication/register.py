@@ -1,9 +1,10 @@
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from db import get_conn
-from datetime import datetime, timedelta
+import bcrypt
 import random
 import string
+from datetime import datetime, timedelta
 import smtplib
 from email.mime.multipart import MIMEMultipart
 from email.mime.text import MIMEText
@@ -12,13 +13,12 @@ import os
 router = APIRouter()
 
 
-class VerifyOTPRequest(BaseModel):
-    email:    EmailStr
-    otp_code: str
-
-
-class ResendOTPRequest(BaseModel):
-    email: EmailStr
+class RegisterRequest(BaseModel):
+    first_name:   str
+    last_name:    str
+    company_name: str
+    email:        EmailStr
+    password:     str
 
 
 def send_otp_email(to_email: str, otp: str):
@@ -119,111 +119,92 @@ def send_otp_email(to_email: str, otp: str):
         raise
 
 
-@router.post("/verify-otp")
-def verify_otp(req: VerifyOTPRequest):
+@router.post("/register")
+def register(req: RegisterRequest):
     conn = get_conn()
     cur  = conn.cursor(dictionary=True)
     try:
-        # Get latest unused OTP for this email
-        cur.execute("""
-            SELECT o.otp_id, o.otp_code, o.otp_expiry, o.is_used, u.user_id
-            FROM tbl_user_email_otp o
-            JOIN Mst_tbldelphiusers u ON o.user_id = u.user_id
-            WHERE o.email = %s AND o.is_used = 0
-            ORDER BY o.created_at DESC
-            LIMIT 1
-        """, (req.email,))
-        otp_row = cur.fetchone()
-
-        if not otp_row:
-            raise HTTPException(
-                status_code=400,
-                detail="No active OTP found. Please request a new one."
-            )
-
-        if datetime.now() > otp_row["otp_expiry"]:
-            raise HTTPException(
-                status_code=400,
-                detail="OTP has expired. Please request a new one."
-            )
-
-        if otp_row["otp_code"] != req.otp_code:
-            raise HTTPException(
-                status_code=400,
-                detail="Invalid OTP. Please check and try again."
-            )
-
-        # Mark OTP as used
-        cur.execute(
-            "UPDATE tbl_user_email_otp SET is_used = 1 WHERE otp_id = %s",
-            (otp_row["otp_id"],)
-        )
-
-        # Mark user email as verified
-        cur.execute(
-            "UPDATE Mst_tbldelphiusers SET email_verified = 1 WHERE user_id = %s",
-            (otp_row["user_id"],)
-        )
-
-        return {"message": "Email verified successfully. You can now log in."}
-
-    finally:
-        cur.close()
-        conn.close()
-
-
-@router.post("/resend-otp")
-def resend_otp(req: ResendOTPRequest):
-    conn = get_conn()
-    cur  = conn.cursor(dictionary=True)
-    try:
-        # Check user exists
+        # Check if email already exists
         cur.execute(
             "SELECT user_id, email_verified FROM Mst_tbldelphiusers WHERE email = %s",
             (req.email,)
         )
-        user = cur.fetchone()
+        existing = cur.fetchone()
 
-        if not user:
-            raise HTTPException(
-                status_code=404,
-                detail="Email not found. Please register first."
-            )
+        if existing:
+            if existing["email_verified"] == 1:
+                raise HTTPException(
+                    status_code=400,
+                    detail="Email already registered. Please login."
+                )
+            else:
+                # Email exists but not verified — resend new OTP
+                user_id    = existing["user_id"]
+                otp_code   = "".join(random.choices(string.digits, k=6))
+                otp_expiry = datetime.now() + timedelta(minutes=10)
 
-        if user["email_verified"] == 1:
-            raise HTTPException(
-                status_code=400,
-                detail="Email is already verified. Please login."
-            )
+                # Invalidate old OTPs
+                cur.execute("""
+                    UPDATE tbl_user_email_otp
+                    SET is_used = 1
+                    WHERE user_id = %s AND is_used = 0
+                """, (user_id,))
 
-        # Invalidate all previous OTPs
+                # Insert new OTP
+                cur.execute("""
+                    INSERT INTO tbl_user_email_otp (user_id, email, otp_code, otp_expiry, is_used)
+                    VALUES (%s, %s, %s, %s, 0)
+                """, (user_id, req.email, otp_code, otp_expiry))
+
+                try:
+                    send_otp_email(req.email, otp_code)
+                except Exception as e:
+                    print(f"Email send error: {e}")
+
+                return {
+                    "message": "Account exists but email not verified. New OTP sent.",
+                    "user_id": user_id,
+                    "email":   req.email
+                }
+
+        # Hash password
+        hashed = bcrypt.hashpw(req.password.encode(), bcrypt.gensalt()).decode()
+
+        # Insert new user with role_id=2 (User) and email_verified=0
         cur.execute("""
-            UPDATE tbl_user_email_otp
-            SET is_used = 1
-            WHERE user_id = %s AND is_used = 0
-        """, (user["user_id"],))
+            INSERT INTO Mst_tbldelphiusers
+                (role_id, user_first_name, user_last_name, company_name, email, password, email_verified, is_active)
+            VALUES (%s, %s, %s, %s, %s, %s, 0, 1)
+        """, (2, req.first_name, req.last_name, req.company_name, req.email, hashed))
 
-        # Generate new OTP
+        user_id = cur.lastrowid
+
+        # Generate 6-digit OTP
         otp_code   = "".join(random.choices(string.digits, k=6))
         otp_expiry = datetime.now() + timedelta(minutes=10)
 
-        # Save new OTP
+        # Save OTP to DB
         cur.execute("""
             INSERT INTO tbl_user_email_otp (user_id, email, otp_code, otp_expiry, is_used)
             VALUES (%s, %s, %s, %s, 0)
-        """, (user["user_id"], req.email, otp_code, otp_expiry))
+        """, (user_id, req.email, otp_code, otp_expiry))
 
         # Send OTP email
         try:
             send_otp_email(req.email, otp_code)
         except Exception as e:
             print(f"Email send error: {e}")
-            raise HTTPException(
-                status_code=500,
-                detail="Failed to send OTP email. Please try again."
-            )
+            return {
+                "message": "Registration successful but email delivery failed. Please use Resend OTP.",
+                "user_id": user_id,
+                "email":   req.email
+            }
 
-        return {"message": "New OTP sent to your email."}
+        return {
+            "message": "Registration successful. OTP sent to your email.",
+            "user_id": user_id,
+            "email":   req.email
+        }
 
     finally:
         cur.close()
