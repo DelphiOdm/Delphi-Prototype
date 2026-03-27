@@ -1,3 +1,4 @@
+# backend/apis/Authentication/auth.py
 from fastapi import APIRouter, HTTPException
 from pydantic import BaseModel, EmailStr
 from db import get_conn
@@ -42,22 +43,16 @@ def send_otp_email(to_email: str, otp: str):
                 <td align="center">
                     <table width="480" cellpadding="0" cellspacing="0"
                         style="background:#ffffff; border-radius:12px; border:1px solid #e2e8f0; padding:40px;">
-
-                        <!-- Logo / Brand -->
                         <tr>
                             <td style="padding-bottom: 24px;">
                                 <span style="font-size:22px; font-weight:700; color:#3b82f6;">Delphi AI</span>
                             </td>
                         </tr>
-
-                        <!-- Message -->
                         <tr>
                             <td style="font-size:15px; color:#374151; padding-bottom:24px;">
                                 Your email verification code is:
                             </td>
                         </tr>
-
-                        <!-- OTP Code -->
                         <tr>
                             <td style="padding-bottom:28px;">
                                 <span style="font-size:36px; font-weight:700; color:#111827;
@@ -66,30 +61,23 @@ def send_otp_email(to_email: str, otp: str):
                                 </span>
                             </td>
                         </tr>
-
-                        <!-- Expiry Note -->
                         <tr>
                             <td style="font-size:13px; color:#6b7280;">
                                 This code expires in <strong style="color:#111827;">10 minutes</strong>.
                                 Do not share it with anyone.
                             </td>
                         </tr>
-
-                        <!-- Divider -->
                         <tr>
                             <td style="padding: 28px 0 16px 0;">
                                 <hr style="border:none; border-top:1px solid #e5e7eb;">
                             </td>
                         </tr>
-
-                        <!-- Footer -->
                         <tr>
                             <td style="font-size:12px; color:#9ca3af;">
                                 If you did not request this, please ignore this email.<br>
                                 &copy; 2025 Delphi AI. All rights reserved.
                             </td>
                         </tr>
-
                     </table>
                 </td>
             </tr>
@@ -124,7 +112,6 @@ def verify_otp(req: VerifyOTPRequest):
     conn = get_conn()
     cur  = conn.cursor(dictionary=True)
     try:
-        # Get latest unused OTP for this email
         cur.execute("""
             SELECT o.otp_id, o.otp_code, o.otp_expiry, o.is_used, u.user_id
             FROM tbl_user_email_otp o
@@ -177,7 +164,6 @@ def resend_otp(req: ResendOTPRequest):
     conn = get_conn()
     cur  = conn.cursor(dictionary=True)
     try:
-        # Check user exists
         cur.execute(
             "SELECT user_id, email_verified FROM Mst_tbldelphiusers WHERE email = %s",
             (req.email,)
@@ -207,13 +193,11 @@ def resend_otp(req: ResendOTPRequest):
         otp_code   = "".join(random.choices(string.digits, k=6))
         otp_expiry = datetime.now() + timedelta(minutes=10)
 
-        # Save new OTP
         cur.execute("""
             INSERT INTO tbl_user_email_otp (user_id, email, otp_code, otp_expiry, is_used)
             VALUES (%s, %s, %s, %s, 0)
         """, (user["user_id"], req.email, otp_code, otp_expiry))
 
-        # Send OTP email
         try:
             send_otp_email(req.email, otp_code)
         except Exception as e:
@@ -225,6 +209,46 @@ def resend_otp(req: ResendOTPRequest):
 
         return {"message": "New OTP sent to your email."}
 
+    finally:
+        cur.close()
+        conn.close()
+
+
+# ── NEW: Fetch user by email after OTP verification ───────────────────────────
+
+@router.get("/user-by-email")
+def get_user_by_email(email: str):
+    """
+    Called by frontend immediately after OTP verification
+    to fetch full user object (including user_id) for localStorage.
+    """
+    conn = get_conn()
+    cur  = conn.cursor(dictionary=True)
+    try:
+        cur.execute("""
+            SELECT
+                u.user_id,
+                u.user_first_name,
+                u.user_last_name,
+                u.company_name,
+                u.email,
+                r.role_name
+            FROM Mst_tbldelphiusers u
+            JOIN Mst_delphirole r ON u.role_id = r.role_id
+            WHERE u.email = %s
+              AND u.is_active = 1
+        """, (email,))
+        user = cur.fetchone()
+
+        if not user:
+            raise HTTPException(status_code=404, detail="User not found")
+
+        return {"success": True, "user": user}
+
+    except HTTPException:
+        raise
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
     finally:
         cur.close()
         conn.close()
