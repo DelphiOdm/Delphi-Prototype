@@ -9,7 +9,11 @@ from dotenv import load_dotenv
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+
+from apis.Intellegence.intellegece import router as intellegence_router
+
 # Fix for Windows — Playwright requires ProactorEventLoop on Windows
+
 if sys.platform == "win32":
     asyncio.set_event_loop_policy(asyncio.WindowsProactorEventLoopPolicy())
 
@@ -46,6 +50,8 @@ app.include_router(persona_router,          prefix="/leadscores/persona")
 app.include_router(generate_persona_router, prefix="/leadscores/persona")
 app.include_router(auth_router)
 app.include_router(onboarding_router)
+
+app.include_router(intellegence_router)
 
 @app.get("/health")
 def health():

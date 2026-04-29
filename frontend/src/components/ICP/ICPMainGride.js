@@ -164,7 +164,7 @@ export default function ICPMainGride({ filters, refreshKey, pageSize }) {
         { params }
       );
 
-      // ✅ Add Recommended Action to Each Lead
+      
       const enrichedLeads = (res.data.leads || []).map((lead) => {
         const quadrant = getICPQuadrant(
           lead.icp_score,

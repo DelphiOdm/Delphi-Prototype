@@ -1,3 +1,4 @@
+
 // ./frontend/src/components/Persona/GeneratePersona.js
 import React, { useEffect, useState, useCallback } from "react";
 import axios from "axios";
@@ -305,6 +306,8 @@ function TableSkeleton() {
 
 export default function GeneratePersona({ appliedFilters = null, onLoadingChange }) {
 
+  
+
   const [leads,      setLeads]      = useState([]);
   const [loading,    setLoading]    = useState(false);
   const [error,      setError]      = useState("");
@@ -360,6 +363,82 @@ export default function GeneratePersona({ appliedFilters = null, onLoadingChange
     // eslint-disable-next-line react-hooks/exhaustive-deps
     [appliedFilters, LEADS_URL],
   );
+  
+  const handleOpenReport = (lead) => {
+
+  sessionStorage.setItem(
+    "persona_report_data",
+    JSON.stringify(lead)
+  );
+
+  window.open(
+    "/persona-report",
+    "_blank"
+  );
+
+};
+
+  // ── CSV Export function ─────────────────────────────────────────
+  const handleExportCSV = async () => {
+    try {
+      setLoading(true);
+      onLoadingChange?.(true);
+
+      const params = {};
+
+      if (appliedFilters) {
+        if (appliedFilters.country_id)         params.country_id         = appliedFilters.country_id;
+        if (appliedFilters.industry_id)        params.industry_id        = appliedFilters.industry_id;
+        if (appliedFilters.job_level_id)       params.job_level_id       = appliedFilters.job_level_id;
+        if (appliedFilters.jobfunction_id)     params.jobfunction_id     = appliedFilters.jobfunction_id;
+        if (appliedFilters.job_titles)         params.job_title          = appliedFilters.job_titles;
+        if (appliedFilters.experience)         params.experience         = appliedFilters.experience;
+        if (appliedFilters.call_engagement_id) params.call_engagement_id = appliedFilters.call_engagement_id;
+        if (appliedFilters.call_rating_id)     params.call_rating_id     = appliedFilters.call_rating_id;
+        if (appliedFilters.call_status_id)     params.call_status_id     = appliedFilters.call_status_id;
+        if (appliedFilters.start_date)         params.start_date         = appliedFilters.start_date;
+        if (appliedFilters.end_date)           params.end_date           = appliedFilters.end_date;
+      }
+
+      // Build query string
+      const queryString = new URLSearchParams(params).toString();
+      const exportUrl = `${API_BASE}/leadscores/persona/leads/export${queryString ? `?${queryString}` : ''}`;
+
+      // Fetch the CSV file
+      const response = await fetch(exportUrl);
+
+      if (!response.ok) {
+        throw new Error('Export failed');
+      }
+
+      // Create blob from response
+      const blob = await response.blob();
+
+      // Create download link
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      
+      // Generate filename with timestamp
+      const timestamp = new Date().toISOString().slice(0, 19).replace(/:/g, '-');
+      link.download = `persona_leads_${timestamp}.csv`;
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      
+      // Cleanup
+      document.body.removeChild(link);
+      window.URL.revokeObjectURL(url);
+
+    } catch (err) {
+      setError("Failed to export CSV. Please try again.");
+      console.error("Export error:", err);
+    } finally {
+      setLoading(false);
+      onLoadingChange?.(false);
+    }
+  };
 
   // ── Re-fetch on filter change ──────────────────────────────────
   useEffect(() => {
@@ -393,11 +472,7 @@ export default function GeneratePersona({ appliedFilters = null, onLoadingChange
         </div>
       )}
 
-      {/* ── Report Modal ─────────────────────────────────────────── */}
-      {reportLead && (
-        <ReportModal lead={reportLead} onClose={() => setReportLead(null)} />
-      )}
-
+      
       {/* ── Error Message ────────────────────────────────────────── */}
       {error && (
         <div className="mb-4 p-4 bg-red-50 border border-red-200 text-red-600 rounded-xl text-sm">
@@ -420,11 +495,39 @@ export default function GeneratePersona({ appliedFilters = null, onLoadingChange
               </span>
             )}
           </div>
-          {!loading && total > 0 && (
-            <p className="text-xs text-gray-400">
-              Page {page} of {totalPages} &middot; {PAGE_SIZE} per page
-            </p>
-          )}
+          
+          <div className="flex items-center gap-3">
+            {/* Export Button */}
+            {!loading && total > 0 && (
+              <button
+                onClick={handleExportCSV}
+                className="px-4 py-2 bg-emerald-600 hover:bg-emerald-700 text-white 
+                  text-xs font-semibold rounded-lg shadow-sm transition-all duration-200
+                  flex items-center gap-2"
+              >
+                <svg 
+                  className="w-4 h-4" 
+                  fill="none" 
+                  stroke="currentColor" 
+                  viewBox="0 0 24 24"
+                >
+                  <path 
+                    strokeLinecap="round" 
+                    strokeLinejoin="round" 
+                    strokeWidth={2} 
+                    d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" 
+                  />
+                </svg>
+                Export CSV
+              </button>
+            )}
+            
+            {!loading && total > 0 && (
+              <p className="text-xs text-gray-400">
+                Page {page} of {totalPages} &middot; {PAGE_SIZE} per page
+              </p>
+            )}
+          </div>
         </div>
 
         {/* Loading skeleton */}
@@ -578,15 +681,25 @@ export default function GeneratePersona({ appliedFilters = null, onLoadingChange
 
                       {/* Report Button */}
                       <td className="px-4 py-3.5">
-                        <button
-                          onClick={() => setReportLead(lead)}
+                        {/* <button
+                          onClick={() => setReportLead(lead)} 
                           className="px-3 py-1.5 bg-white border border-red-200
                             hover:bg-red-600 hover:text-white hover:border-red-600
                             text-red-600 text-xs font-semibold rounded-lg shadow-sm
                             transition-all duration-200 whitespace-nowrap"
                         >
                           View Report
-                        </button>
+                        </button> */}
+
+                        <button
+                        onClick={() => handleOpenReport(lead)}
+                        className="px-3 py-1.5 bg-white border border-red-200
+                          hover:bg-red-600 hover:text-white hover:border-red-600
+                          text-red-600 text-xs font-semibold rounded-lg shadow-sm
+                          transition-all duration-200 whitespace-nowrap"
+                      >
+                        View Report
+                      </button>
                       </td>
 
                     </tr>

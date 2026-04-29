@@ -1,0 +1,182 @@
+/* MAIN LAYOUT */
+
+.main-container {
+
+  display: flex;
+  height: 90vh;
+  width: 100%;
+  font-family: Arial, sans-serif;
+}
+
+
+
+/* LEFT PANEL */
+
+.left-panel {
+
+  width: 15%;
+  border-right: 1px solid #ddd;
+  padding: 15px;
+  background-color: #f9fafb;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+
+}
+
+.panel-title {
+
+  margin-bottom: 20px;
+  font-weight: bold;
+
+}
+
+.input-box {
+
+  width: 100%;
+  padding: 10px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  resize: none;
+  font-size: 14px;
+
+}
+
+.ask-button {
+
+  margin-top: 10px;
+  width: 100%;
+  padding: 10px;
+  background-color: #2563eb;
+  color: white;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: bold;
+
+}
+
+
+
+/* RIGHT PANEL */
+
+.right-panel {
+
+  width: 70%;
+  display: flex;
+  flex-direction: column;
+  background-color: #ffffff;
+
+}
+
+.chat-window {
+
+  flex: 1;
+  padding: 15px;
+  overflow-y: auto;
+
+}
+
+
+
+/* MESSAGE */
+
+.message {
+
+  margin-bottom: 12px;
+  display: flex;
+
+}
+
+.message.user {
+
+  justify-content: flex-end;
+
+}
+
+.message.bot {
+
+  justify-content: flex-start;
+
+}
+
+.bubble {
+
+  padding: 10px 14px;
+  border-radius: 12px;
+  max-width: 70%;
+  font-size: 14px;
+  line-height: 1.4;
+
+}
+
+
+
+/* USER STYLE */
+
+.message.user .bubble {
+
+  background-color: #2563eb;
+  color: white;
+
+}
+
+
+
+/* BOT STYLE */
+
+.message.bot .bubble {
+
+  background-color: #e5e7eb;
+  color: black;
+
+}
+
+
+
+/* TABLE */
+
+.table-wrapper {
+
+  background-color: white;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  overflow-x: auto;
+
+}
+
+.data-table {
+
+  border-collapse: collapse;
+  width: 100%;
+
+}
+
+.data-table th {
+
+  border: 1px solid #ddd;
+  padding: 8px;
+  background-color: #f3f4f6;
+  font-weight: bold;
+  font-size: 13px;
+
+}
+
+.data-table td {
+
+  border: 1px solid #ddd;
+  padding: 8px;
+  font-size: 13px;
+
+}
+
+
+
+/* LOADING */
+
+.loading {
+
+  font-style: italic;
+  color: #6b7280;
+
+}

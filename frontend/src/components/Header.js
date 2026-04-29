@@ -131,7 +131,7 @@ export default function Header() {
 <div 
     className="d-flex align-items-center gap-3" 
     style={{ zIndex: 1040, cursor: 'pointer', minWidth: '180px' }}
-    onClick={() => navigate("/SuperManagerDashboard")}
+    onClick={() => navigate("/Dashboard")}
 >
     {/* Enhanced Typography Logo */}
     <h5 className="mb-0 delphi-logo-text">
