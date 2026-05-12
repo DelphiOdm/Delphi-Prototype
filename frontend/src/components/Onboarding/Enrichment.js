@@ -4,7 +4,6 @@ import { Zap, Search, Loader2, Save, CheckCircle, AlertCircle, X, Plus } from "l
 import axios from "axios";
 
 const API_BASE_URL = process.env.REACT_APP_API_DOMAIN;
-
 // ── Step indicator ────────────────────────────────────
 function StepIndicator({ step }) {
     return (
@@ -180,7 +179,8 @@ export default function Enrichment() {
                 brands:       brands.join(", "),
             });
 
-            navigate("/Dashboard");
+            // navigate("/Dashboard");
+             navigate("/Intelligence");
 
         } catch (err) {
             setSaveError(

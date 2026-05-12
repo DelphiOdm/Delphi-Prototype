@@ -262,7 +262,9 @@ def extract_brands_from_soup(
                 for key in [
                     "brand",
                     "model",
-                    "subOrganization"
+                    "subOrganization",
+                    "Product Overview",
+                    "Product"
                 ]:
 
                     val = data.get(key)
@@ -602,3 +604,62 @@ async def enrich_company(
             result.get("brands", "")
         }
     }
+
+@router.post("/save-profile")
+async def save_profile(payload: SaveProfileRequest):
+
+    try:
+        conn = get_conn()
+        cursor = conn.cursor()
+
+        query = """
+        INSERT INTO delphi_company_profiles (
+            user_id,
+            company_name,
+            company_size,
+            headquarters,
+            type,
+            founded,
+            revenue_size,
+            specialties,
+            website,
+            brands
+        )
+        VALUES (%s,%s,%s,%s,%s,%s,%s,%s,%s,%s)
+        """
+
+        values = (
+            payload.user_id,
+            payload.company_name,
+            payload.company_size,
+            payload.headquarters,
+            payload.type,
+            payload.founded,
+            payload.revenue_size,
+            payload.specialties,
+            payload.website,
+            payload.brands
+        )
+
+        cursor.execute(query, values)
+
+        conn.commit()
+
+        return {
+            "success": True,
+            "message": "Profile saved successfully"
+        }
+
+    except Exception as e:
+
+        raise HTTPException(
+            status_code=500,
+            detail=str(e)
+        )
+
+    finally:
+        try:
+            cursor.close()
+            conn.close()
+        except:
+            pass
