@@ -29,3 +29,4 @@ dist/
 .idea/
 EOFbackend/pipeline/
 backend/trend.py
+backend/pipeline/
