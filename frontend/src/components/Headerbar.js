@@ -26,7 +26,7 @@ export default function GlassNavigation() {
     ];
 
     return (
-        <div className="fixed-top w-100 d-flex justify-content-center mt-3 px-3" style={{ zIndex: 1030, pointerEvents: 'none' }}>
+        <div  className="w-100 d-flex justify-content-center" style={{ zIndex: 1030, pointerEvents: 'none' }}>
             <div 
                 ref={scrollRef}
                 className="glass-dock d-flex align-items-center p-2 rounded-pill shadow-lg border"

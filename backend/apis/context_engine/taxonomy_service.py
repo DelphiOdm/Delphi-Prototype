@@ -1,8 +1,5 @@
 # taxonomy_service.py
-
 from db import get_conn
-
-
 def fetch_column_values(query, params=None):
 
     conn = get_conn()

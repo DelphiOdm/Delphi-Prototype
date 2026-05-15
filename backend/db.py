@@ -45,7 +45,8 @@ dbconfig = {
     "host": DB_HOST,
     "database": DB_NAME,
     "raise_on_warnings": True,
-    "autocommit": True
+    "autocommit": True,
+    "ssl_disabled": True,
 }
 
 # a small connection pool

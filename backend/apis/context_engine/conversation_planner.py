@@ -1,5 +1,4 @@
 # conversation_planner.py
-
 REQUIRED_FIELDS = [
     "geography",        # 1st
     "industry",         # 2nd

@@ -1,9 +1,6 @@
 # response_generator.py
 from .openai_service import ask_gpt
-
-
 def generate_human_response(user_input, context):
-
     prompt = f"""
 You are a senior B2B strategist.
 
