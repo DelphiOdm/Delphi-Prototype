@@ -10,13 +10,18 @@ export default function GlassNavigation() {
     if (location.pathname === "/" || location.pathname === "/login") return null;
     // Dynamic tabs - you can easily add all 10 here
     const tabs = [
-        { label: "Dashboard", icon: "bi-grid-1x2", path: "/Dashboard" },
-        { label: "Propensity Scoring", icon: "bi-graph-up-arrow", path: "/leadscoring" },
-        // { label: "Create ICP", icon: "bi-person-badge", path: "/ICP/GenerateICP" },
+        // { label: "Dashboard", icon: "bi-grid-1x2", path: "/Dashboard" },
+         { label: "Propensity Scoring", icon: "bi-graph-up-arrow", path: "/leadscoring" },
          { label: "ICP", icon: "bi-dice-6", path: "/ICP/CreateIdealTAL" },
          { label: "CreatePersona", icon: "bi-person-badge", path: "/Persona/CreatePersona" },
+        //  { label: "BGI", icon: "bi-bag", path: "/BGI" },
+        //  { label: "GBP", icon: "bi bi-globe-central-south-asia", path: "/GBP" },
+        //  { label: "TAL Creation & Refinement", icon: "bi bi-file-earmark-medical", path: "/TAL" },
+        //  { label: "TAL Prioritization ", icon: "bi bi-file-earmark-arrow-up", path: "/TAL Prioritization" },
+        //  { label: "Industry Discovery ", icon: "bi bi-building-fill-check", path: "/Industry" },
+        //  { label: "Top 5 Customer Analysis  ", icon: "bi bi-5-square", path: "/Top5" },
+         { label: "Intelligence ", icon: "bi bi-lightbulb", path: "/Intelligence" }
      
-        
        
     ];
 
