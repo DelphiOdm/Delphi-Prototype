@@ -18,7 +18,8 @@ export default function Header() {
             <Sidebar isOpen={isSettingsOpen} toggleSidebar={() => setSettingsOpen(false)} />
             
             {/* Main Wrapper: Balanced Fixed Header */}
-            <nav className="navbar  bg-white border-bottom px-4 py-2 shadow-sm rounded-pill shadow-lg border" style={{ zIndex: 1050 }}>
+            <nav
+  className="navbar bg-white border-bottom px-4 py-2 shadow-sm  shadow-lg border" style={{position: "fixed",left: "50%",transform: "translateX(-50%)",width: "100%",zIndex: 1050}}>
                 <div className="container-fluid d-flex align-items-center justify-content-between ">
                     
                     {/* LEFT: Branding - Fixed Width to prevent jumping */}

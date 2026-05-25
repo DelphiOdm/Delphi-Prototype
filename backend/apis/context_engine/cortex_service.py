@@ -1,76 +1,4 @@
-# # backend/apis/context_engine/cortex_service.py
-
-# import os
-# import requests
-# import snowflake.connector
-
-
-# def get_token():
-#     conn = snowflake.connector.connect(
-#         user=os.getenv("SNOWFLAKE_USER"),
-#         password=os.getenv("SNOWFLAKE_PASSWORD"),
-#         account=os.getenv("SNOWFLAKE_ACCOUNT"),
-#         warehouse=os.getenv("SNOWFLAKE_WAREHOUSE"),
-#         database=os.getenv("SNOWFLAKE_DATABASE"),
-#         schema=os.getenv("SNOWFLAKE_SCHEMA"),
-#         role=os.getenv("SNOWFLAKE_ROLE"),
-#     )
-
-#     return conn.rest.token
-
-
-# def query_cortex_analyst(prompt: str):
-
-#     account = os.getenv("SNOWFLAKE_ACCOUNT")
-#     token = get_token()
-
-#     url = f"https://{account}.snowflakecomputing.com/api/v2/cortex/analyst/message"
-
-#     payload = {
-#         "messages": [
-#             {
-#                 "role": "user",
-#                 "content": [
-#                     {
-#                         "type": "text",
-#                         "text": prompt
-#                     }
-#                 ]
-#             }
-#         ],
-#         "semantic_model_file": "@DELPHI_DB.PUBLIC.DELPHI_STAGE/delphi_semantic.yaml"
-#     }
-
-#     headers = {
-#         "Authorization": f'Snowflake Token="{token}"',
-#         "Content-Type": "application/json"
-#     }
-
-#     response = requests.post(url, json=payload, headers=headers)
-
-#     data = response.json()
-
-#     print("RAW CORTEX RESPONSE:", data)
-
-#     # -----------------------------
-#     # EXTRACT ROWS PROPERLY
-#     # -----------------------------
-#     try:
-#         message = data["message"]["content"]
-
-#         # Cortex sometimes returns results in "table-like output"
-#         for block in message:
-#             if "results" in block:
-#                 return block["results"]
-
-#         # fallback: if no explicit results field
-#         return []
-
-#     except Exception as e:
-#         print("PARSE ERROR:", str(e))
-#         return []
-
-
+#cortex_service.py
 import os
 import requests
 import snowflake.connector
@@ -108,7 +36,7 @@ def query_cortex_analyst(prompt: str):
                     ]
                 }
             ],
-            "semantic_model_file": "@DELPHI_DB.PUBLIC.DELPHI_STAGE/delphi_semantic.yaml"
+            "semantic_model_file": "@DELPHI_DB.PUBLIC.DELPHI_STAGE/DELPHI_LEADS.yaml"
         }
 
         headers = {

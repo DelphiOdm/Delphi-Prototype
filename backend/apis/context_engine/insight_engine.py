@@ -6,7 +6,6 @@
 #   3. Persona Scoring     (Usp_get_persona_breakdown)
 # Returns enriched, ranked lead records ready for display.
 # ─────────────────────────────────────────────────────────────
-
 from __future__ import annotations
 import logging
 from db import get_conn

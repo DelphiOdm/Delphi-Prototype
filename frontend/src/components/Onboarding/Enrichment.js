@@ -233,7 +233,7 @@ export default function Enrichment() {
                                     </label>
                                     <input
                                         className={`form-control ${formErrors.company_name ? "is-invalid" : ""}`}
-                                        placeholder="e.g. BMW India"
+                                        placeholder="e.g. XTS World"
                                         value={form.company_name}
                                         onChange={(e) => setForm({ ...form, company_name: e.target.value })}
                                     />
@@ -294,7 +294,7 @@ export default function Enrichment() {
                                     </label>
                                     <input
                                         className={`form-control ${formErrors.headquarters ? "is-invalid" : ""}`}
-                                        placeholder="e.g. Mumbai, India"
+                                        placeholder="e.g. Pune, India"
                                         value={form.headquarters}
                                         onChange={(e) => setForm({ ...form, headquarters: e.target.value })}
                                     />
@@ -340,7 +340,7 @@ export default function Enrichment() {
                                     <label className="form-label fw-semibold small">Specialties</label>
                                     <input
                                         className="form-control"
-                                        placeholder="e.g. Luxury Vehicles, Electric Cars, SUVs"
+                                        placeholder="e.g. Healthcare, AI, SaaS"
                                         value={form.specialties}
                                         onChange={(e) => setForm({ ...form, specialties: e.target.value })}
                                     />
@@ -379,7 +379,7 @@ export default function Enrichment() {
                                     <input
                                         type="text"
                                         className="form-control"
-                                        placeholder="e.g. https://www.bmw.in/en/index.html"
+                                        placeholder="e.g. https://xtsworld.com/"
                                         value={websiteInput}
                                         onChange={(e) => setWebsiteInput(e.target.value)}
                                         onKeyDown={(e) => e.key === "Enter" && handleEnrich()}
@@ -471,7 +471,7 @@ export default function Enrichment() {
                                         <div className="input-group">
                                             <input
                                                 className="form-control"
-                                                placeholder="Add brand/model manually e.g. BMW X Series"
+                                                placeholder="Add brand/model manually e.g. Delphi AI"
                                                 value={brandInput}
                                                 onChange={(e) => setBrandInput(e.target.value)}
                                                 onKeyDown={(e) => e.key === "Enter" && addBrand()}

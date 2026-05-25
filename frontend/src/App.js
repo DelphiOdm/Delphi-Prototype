@@ -40,12 +40,10 @@ function Layout() {
   return (
     <>
       <ToastContainer position="top-right" autoClose={3000} />
-
-      {!shouldHideLayout && <Nav_Sidebar />}
       {!shouldHideLayout && <Header />}
 
-      <div className="d-flex">
-        <div className="flex-grow-1">
+      <div className="app-layout">
+        <div className="app-content">
           <Routes>
 
             {/* PUBLIC */}
