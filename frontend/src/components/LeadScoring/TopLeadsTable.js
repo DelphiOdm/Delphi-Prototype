@@ -26,10 +26,7 @@ export default function TopLeadsTable({ leads = [], loading, pageSize }) {
               <div className="icp-diamond four"></div>
             </div>
 
-            {/* <div className="icp-loading-text text-success mt-4">
-              Calculating  <ClipLoader size={15} />
-                    
-            </div> */}
+           
           </div>
         </div>
       )}

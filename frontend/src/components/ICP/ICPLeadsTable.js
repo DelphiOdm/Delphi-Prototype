@@ -185,7 +185,7 @@ export default function ICPLeadsTable({
                 </td>
                 <td>
                   <button
-                    className="btn btn-sm btn-outline-primary rounded-pill"
+                    className="btn btn-sm btn-outline-warning rounded-pill"
                     onClick={() =>
                       window.open(`/icp/leads/${l.Lead_id}`, "_blank")
                     }
