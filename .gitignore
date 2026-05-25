@@ -8,6 +8,7 @@ __pycache__/
 venv/
 .venv/
 backend/.env
+*.csv
 
 # Node.js
 node_modules/
@@ -26,4 +27,6 @@ dist/
 .DS_Store
 .vscode/
 .idea/
-EOF
+EOFbackend/pipeline/
+backend/trend.py
+backend/pipeline/
